@@ -69,12 +69,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>D:\code resources\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\code resources\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\resources\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)..\resources\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Users\Egg\source\resources\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Egg\source\resources\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\resources\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)..\resources\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(ProjectDir)..\resources\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)..\resources\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(ProjectDir)..\resources\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)..\resources\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -85,6 +93,11 @@
     <Link>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>robocopy $(ProjectDir)FS $(TargetDir)FS;
+robocopy $(ProjectDir)VS $(TargetDir)VS;
+robocopy $(ProjectDir)GS $(TargetDir)GS</Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -92,6 +105,14 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
+    <CustomBuildStep>
+      <Command>robocopy $(ProjectDir)FS $(TargetDir)FS;
+robocopy $(ProjectDir)VS $(TargetDir)VS;
+robocopy $(ProjectDir)GS $(TargetDir)GS</Command>
+    </CustomBuildStep>
+    <Link>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -106,6 +127,11 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>robocopy $(ProjectDir)FS $(TargetDir)FS;
+robocopy $(ProjectDir)VS $(TargetDir)VS;
+robocopy $(ProjectDir)GS $(TargetDir)GS</Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -118,7 +144,13 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>robocopy $(ProjectDir)FS $(TargetDir)FS;
+robocopy $(ProjectDir)VS $(TargetDir)VS;
+robocopy $(ProjectDir)GS $(TargetDir)GS</Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
