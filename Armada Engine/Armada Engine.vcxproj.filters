@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Shader Files">
+      <UniqueIdentifier>{a1c078a6-4ae0-4bfc-99da-b591c193fc6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Files\Vertex">
+      <UniqueIdentifier>{0e19b725-4d9c-4c1b-939d-23a8ecd2ce28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Files\Fragment">
+      <UniqueIdentifier>{37ddfe24-5c86-427d-8865-bc01b2e52103}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Files\Geometry">
+      <UniqueIdentifier>{7c2b3303-9ea1-46f2-b73a-b0960dc3d571}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light">
+      <UniqueIdentifier>{60db0c6d-08f7-434d-8119-171679d69337}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light\Header Files">
+      <UniqueIdentifier>{03cb208d-0611-4a82-a21a-2ca59b883791}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light\Source Files">
+      <UniqueIdentifier>{676bef7c-d7bb-4c79-87e2-f8765750520f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderElement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SolidLight.cpp">
+      <Filter>Light\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LightScene.cpp">
+      <Filter>Light\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DemoScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LightController.cpp">
+      <Filter>Light\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VS\Simple.vs">
+      <Filter>Shader Files\Vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Terminology.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GS\ShadowMaker.gs">
+      <Filter>Shader Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderElement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SolidLight.h">
+      <Filter>Light\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LightScene.h">
+      <Filter>Light\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DemoScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LightController.h">
+      <Filter>Light\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FS\Simple.fs">
+      <Filter>Shader Files\Fragment</Filter>
+    </None>
+    <None Include="FS\Shadow.fs">
+      <Filter>Shader Files\Fragment</Filter>
+    </None>
+    <None Include="VS\Shadow.vs">
+      <Filter>Shader Files\Vertex</Filter>
+    </None>
+    <None Include="VS\Sampler.vs">
+      <Filter>Shader Files\Vertex</Filter>
+    </None>
+    <None Include="FS\Sampler.fs">
+      <Filter>Shader Files\Fragment</Filter>
+    </None>
+    <None Include="FS\Light.fs">
+      <Filter>Shader Files\Fragment</Filter>
+    </None>
+    <None Include="VS\Light.vs">
+      <Filter>Shader Files\Vertex</Filter>
+    </None>
+  </ItemGroup>
+</Project>
