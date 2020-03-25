@@ -158,12 +158,14 @@ void Window::processInput(float deltaTime, bool& paused, int& scene)
 	if (lastScene == scene)
 	{
 		cam.translateLocal(strafe);
+		
 	}
 	else
 	{
 		cam.setPosition(glm::vec3(0.0f, 0.0f, 1.0f));
 	}
 	cam.setForward(-1.0f*cam.getPosition());
+	cam.setUp(glm::cross(cam.getRight(), cam.getForward()));
 	cam.setPosition(glm::normalize(cam.getPosition()) * (10.0f * scene));
 }
 
