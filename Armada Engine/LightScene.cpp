@@ -57,8 +57,13 @@ void LightScene::Render(glm::vec3 forward, glm::vec3 position, glm::mat4 viewMat
 		0,1,3,
 		2,0,3,
 	};
+	auto lightBox_p = std::make_unique<Vertex[]>(4);
+	auto lightIndex_p = std::make_unique<Index[]>(6);
 
-	static Mesh lightScreen(lightBox, 4, lightIndex, 6);
+	std::copy(lightBox, lightBox + 4, lightBox_p.get());
+	std::copy(lightIndex, lightIndex + 6, lightIndex_p.get());
+
+	static Mesh lightScreen(std::move(lightBox_p), 4, std::move(lightIndex_p), 6);
 
 
 	std::multimap<float, SolidLight*> sortedLights;

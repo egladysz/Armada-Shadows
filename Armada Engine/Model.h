@@ -8,8 +8,8 @@ class Model
 public:
 	Model();
 	~Model();
-	void Draw(Shader shader);
-	Mesh* mesh;
+	void Draw(Shader shader) const;
+	const Mesh* mesh;
 	glm::mat4 transform;
 };
 

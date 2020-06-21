@@ -3,9 +3,10 @@
 #include <GLFW/glfw3.h>
 
 
-Mesh::Mesh(Vertex * vertList, int vertCount, Index * indList, int indCount)
-	:vertexList{vertList}, vertexCount {vertCount},
-	indexList{indList}, indexCount {indCount}
+
+Mesh::Mesh(std::unique_ptr<Vertex[]> vertList, int vertCount, std::unique_ptr<Index[]> indList, int indCount)
+	:vertexList{ std::move(vertList) }, vertexCount{ vertCount },
+	indexList{ std::move(indList) }, indexCount{ indCount }
 {
 	primeMesh();
 }
@@ -30,10 +31,10 @@ void Mesh::primeMesh()
 	glBindVertexArray(vertexArray);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertexCount* sizeof(Vertex), vertexList, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertexCount* sizeof(Vertex), vertexList.get(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount* sizeof(Index), indexList, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount* sizeof(Index), indexList.get(), GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));

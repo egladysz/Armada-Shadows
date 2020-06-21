@@ -34,6 +34,9 @@
     <Filter Include="Light\Source Files">
       <UniqueIdentifier>{676bef7c-d7bb-4c79-87e2-f8765750520f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="IO">
+      <UniqueIdentifier>{37341871-e418-4d72-beba-6599a064969f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -74,6 +77,9 @@
     </ClCompile>
     <ClCompile Include="ModelController.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshReaderObj.cpp">
+      <Filter>IO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +127,12 @@
     </ClInclude>
     <ClInclude Include="ModelController.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshReader.h">
+      <Filter>IO</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshReaderObj.h">
+      <Filter>IO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

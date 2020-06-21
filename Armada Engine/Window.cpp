@@ -116,12 +116,12 @@ void Window::processInput(float deltaTime, bool& paused, int& scene)
 		glfwSetWindowShouldClose(glWindow, true);
 
 	
-
-	if (glfwGetKey(glWindow, GLFW_KEY_Q) == GLFW_PRESS)
+	
+	if (glfwGetKey(glWindow, GLFW_KEY_COMMA) == GLFW_PRESS)
 		paused = true;
-	if (glfwGetKey(glWindow, GLFW_KEY_E) == GLFW_PRESS)
+	if (glfwGetKey(glWindow, GLFW_KEY_PERIOD) == GLFW_PRESS)
 		paused = false;
-
+		
 	int lastScene = scene;
 
 	if (glfwGetKey(glWindow, GLFW_KEY_1) == GLFW_PRESS)
@@ -142,8 +142,12 @@ void Window::processInput(float deltaTime, bool& paused, int& scene)
 		strafe.x -= camVel;*/
 
 	glm::vec3 strafe{ 0.0f };
-	float camVel = cameraSpeed * deltaTime*scene;
-
+	float camVel = cameraSpeed * deltaTime;
+	float dx = 0.0f;
+	if (glfwGetKey(glWindow, GLFW_KEY_Q) == GLFW_PRESS)
+		dx += camVel;
+	if (glfwGetKey(glWindow, GLFW_KEY_E) == GLFW_PRESS)
+		dx -= camVel;
 	if (glfwGetKey(glWindow, GLFW_KEY_W) == GLFW_PRESS)
 		strafe.y += camVel;
 	if (glfwGetKey(glWindow, GLFW_KEY_S) == GLFW_PRESS)
@@ -152,12 +156,16 @@ void Window::processInput(float deltaTime, bool& paused, int& scene)
 		strafe.z -= camVel;
 	if (glfwGetKey(glWindow, GLFW_KEY_D) == GLFW_PRESS)
 		strafe.z += camVel;
+	if (glfwGetKey(glWindow, GLFW_KEY_R) == GLFW_PRESS)
+	{
+		cam.setPosition(glm::vec3(0.0f, 0.0f, 10.0f));
+		cam.setUp(glm::vec3(0.0f, 1.0f, 0.0f));
+	}
 
-
-
+	float camDistance = glm::max(1.0f,glm::length(cam.getPosition()) + dx);
 	if (lastScene == scene)
 	{
-		cam.translateLocal(strafe);
+		cam.translateLocal(strafe*camDistance/5.0f);
 		
 	}
 	else
@@ -166,7 +174,7 @@ void Window::processInput(float deltaTime, bool& paused, int& scene)
 	}
 	cam.setForward(-1.0f*cam.getPosition());
 	cam.setUp(glm::cross(cam.getRight(), cam.getForward()));
-	cam.setPosition(glm::normalize(cam.getPosition()) * (10.0f * scene));
+	cam.setPosition(glm::normalize(cam.getPosition()) * (camDistance));
 }
 
 void Window::render(std::vector<LightScene> scenes, Shader objectShader)

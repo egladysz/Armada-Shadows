@@ -5,6 +5,7 @@
 #include "Model.h"
 #include "SolidLight.h"
 #include "LightScene.h"
+#include "MeshReaderObj.h"
 unsigned int screenWidth = 800;
 unsigned int screenHeight = 600;
 
@@ -24,7 +25,6 @@ int main()
 {
 	Window window(screenWidth, screenHeight, "Armada Engine - Demo Candidate 2");
 	//GLFW setup
-
 	if (!window.initialize())
 	{
 		return -1;
@@ -70,122 +70,11 @@ int main()
 	lightBlender.prime();
 
 
-
-
-	//testing
-	Vertex vertices[24];
-	{
-		vertices[0].position = glm::vec3(0.5f, 0.5f, 0.5f);
-		vertices[1].position = glm::vec3(0.5f, -0.5f, 0.5f);
-		vertices[2].position = glm::vec3(-0.5f, 0.5f, 0.5f);
-		vertices[3].position = glm::vec3(-0.5f, -0.5f, 0.5f);
-		vertices[4].position = glm::vec3(0.5f, 0.5f, -0.5f);
-		vertices[5].position = glm::vec3(0.5f, -0.5f, -0.5f);
-		vertices[6].position = glm::vec3(-0.5f, 0.5f, -0.5f);
-		vertices[7].position = glm::vec3(-0.5f, -0.5f, -0.5f);
-
-		vertices[8].position = glm::vec3(0.5f, 0.5f, 0.5f);
-		vertices[9].position = glm::vec3(0.5f, 0.5f, -0.5f);
-		vertices[10].position = glm::vec3(-0.5f, 0.5f, 0.5f);
-		vertices[11].position = glm::vec3(-0.5f, 0.5f, -0.5f);
-		vertices[12].position = glm::vec3(0.5f, -0.5f, 0.5f);
-		vertices[13].position = glm::vec3(0.5f, -0.5f, -0.5f);
-		vertices[14].position = glm::vec3(-0.5f, -0.5f, 0.5f);
-		vertices[15].position = glm::vec3(-0.5f, -0.5f, -0.5f);
-
-		vertices[16].position = glm::vec3(0.5f, 0.5f, 0.5f);
-		vertices[17].position = glm::vec3(0.5f, -0.5f, 0.5f);
-		vertices[18].position = glm::vec3(0.5f, 0.5f, -0.5f);
-		vertices[19].position = glm::vec3(0.5f, -0.5f, -0.5f);
-		vertices[20].position = glm::vec3(-0.5f, 0.5f, 0.5f);
-		vertices[21].position = glm::vec3(-0.5f, -0.5f, 0.5f);
-		vertices[22].position = glm::vec3(-0.5f, 0.5f, -0.5f);
-		vertices[23].position = glm::vec3(-0.5f, -0.5f, -0.5f);
-
-		vertices[0].normal = glm::vec3(0.0f, 0.0f, 1.0f);
-		vertices[1].normal = glm::vec3(0.0f, 0.0f, 1.0f);
-		vertices[2].normal = glm::vec3(0.0f, 0.0f, 1.0f);
-		vertices[3].normal = glm::vec3(0.0f, 0.0f, 1.0f);
-
-		vertices[4].normal = glm::vec3(0.0f, 0.0f, -1.0f);
-		vertices[5].normal = glm::vec3(0.0f, 0.0f, -1.0f);
-		vertices[6].normal = glm::vec3(0.0f, 0.0f, -1.0f);
-		vertices[7].normal = glm::vec3(0.0f, 0.0f, -1.0f);
-
-
-		vertices[8].normal = glm::vec3(0.0f, 1.0f, 0.0f);
-		vertices[9].normal = glm::vec3(0.0f, 1.0f, 0.0f);
-		vertices[10].normal = glm::vec3(0.0f, 1.0f, 0.0f);
-		vertices[11].normal = glm::vec3(0.0f, 1.0f, 0.0f);
-
-		vertices[12].normal = glm::vec3(0.0f, -1.0f, 0.0f);
-		vertices[13].normal = glm::vec3(0.0f, -1.0f, 0.0f);
-		vertices[14].normal = glm::vec3(0.0f, -1.0f, 0.0f);
-		vertices[15].normal = glm::vec3(0.0f, -1.0f, 0.0f);
-
-
-		vertices[16].normal = glm::vec3(1.0f, 0.0f, 0.0f);
-		vertices[17].normal = glm::vec3(1.0f, 0.0f, 0.0f);
-		vertices[18].normal = glm::vec3(1.0f, 0.0f, 0.0f);
-		vertices[19].normal = glm::vec3(1.0f, 0.0f, 0.0f);
-
-		vertices[20].normal = glm::vec3(-1.0f, 0.0f, 0.0f);
-		vertices[21].normal = glm::vec3(-1.0f, 0.0f, 0.0f);
-		vertices[22].normal = glm::vec3(-1.0f, 0.0f, 0.0f);
-		vertices[23].normal = glm::vec3(-1.0f, 0.0f, 0.0f);
-
-
-
-
-		vertices[0].uv = glm::vec2(1.0f, 1.0f);
-		vertices[1].uv = glm::vec2(1.0f, 0.0f);
-		vertices[2].uv = glm::vec2(0.0f, 1.0f);
-		vertices[3].uv = glm::vec2(0.0f, 0.0f);
-		vertices[4].uv = glm::vec2(1.0f, 1.0f);
-		vertices[5].uv = glm::vec2(1.0f, 0.0f);
-		vertices[6].uv = glm::vec2(0.0f, 1.0f);
-		vertices[7].uv = glm::vec2(0.0f, 0.0f);
-
-		vertices[8].uv = glm::vec2(1.0f, 1.0f);
-		vertices[9].uv = glm::vec2(1.0f, 0.0f);
-		vertices[10].uv = glm::vec2(0.0f, 1.0f);
-		vertices[11].uv = glm::vec2(0.0f, 0.0f);
-		vertices[12].uv = glm::vec2(1.0f, 1.0f);
-		vertices[13].uv = glm::vec2(1.0f, 0.0f);
-		vertices[14].uv = glm::vec2(0.0f, 1.0f);
-		vertices[15].uv = glm::vec2(0.0f, 0.0f);
-
-		vertices[16].uv = glm::vec2(1.0f, 1.0f);
-		vertices[17].uv = glm::vec2(1.0f, 0.0f);
-		vertices[18].uv = glm::vec2(0.0f, 1.0f);
-		vertices[19].uv = glm::vec2(0.0f, 0.0f);
-		vertices[20].uv = glm::vec2(1.0f, 1.0f);
-		vertices[21].uv = glm::vec2(1.0f, 0.0f);
-		vertices[22].uv = glm::vec2(0.0f, 1.0f);
-		vertices[23].uv = glm::vec2(0.0f, 0.0f);
-	}
-	unsigned int indices[]{
-		0,1,3,
-		2,0,3,
-
-		4,5,7,
-		6,4,7,
-
-		8,9,11,
-		10,8,11,
-
-		12,13,15,
-		14,12,15,
-
-		16,17,19,
-		18,16,19,
-
-		20,21,23,
-		22,20,23
-
-	};
-
-	Mesh cube(vertices, 24, indices, 36);
+	MeshReaderObj meshReader;
+	
+	auto cube = meshReader.loadMesh("Mesh/cube.obj");
+	auto humen = meshReader.loadMesh("Mesh/humen.obj");
+	auto house = meshReader.loadMesh("Mesh/remhaus.obj");
 
 	std::vector<LightScene> allScenes;
 
@@ -201,17 +90,19 @@ int main()
 	SolidLight s1l1;
 	{
 
-		s1l1.color = glm::vec4(1.0f, 1.0f, 1.0f, 0.5f);
-		s1l1.lightRadius = 5;
-		s1l1.shadowLength = 200;
+		s1l1.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		s1l1.lightRadius = 40;
+		s1l1.shadowLength = 40;
+		s1l1.position = glm::vec3(0.0f, 0.0f, 0.0f);
 		s1l1.on = true;
 		l1.push_back(&s1l1);
 
-		s1c1.mesh = &cube;
-		s1c1.transform = glm::translate(glm::mat4{ 1 }, glm::vec3(2.0f, 1.0f, 0.0f));
+		s1c1.mesh = humen.get();
+		s1c1.transform = glm::translate(glm::mat4{ 1 }, glm::vec3(0.0f, -20.0f, 0.0f));
 		
-		s1c2.mesh = &cube;
-		s1c2.transform = glm::scale(glm::rotate(glm::translate(glm::mat4{ 1 }, glm::vec3(0.0f, -2.0f, 0.0f)),glm::radians(45.f),glm::vec3(1.0f,0.5f,0.25f)),glm::vec3(2.0f,0.5f,1.0f));
+		s1c2.mesh = cube.get();
+		//s1c2.transform = glm::scale(glm::rotate(glm::translate(glm::mat4{ 1 }, glm::vec3(0.0f, -2.0f, 0.0f)),glm::radians(45.f),glm::vec3(1.0f,0.5f,0.25f)),glm::vec3(2.0f,0.5f,1.0f));
+		s1c2.transform = glm::scale(glm::translate(glm::mat4{ 1 },glm::vec3(0.0f,-70.0f,0.0f)),glm::vec3(100.0f,100.0f,100.0f));
 
 		m1.push_back(&s1c1);
 		m1.push_back(&s1c2);
@@ -249,7 +140,7 @@ int main()
 		l2.push_back(&s2l1);
 		l2.push_back(&s2l2);
 		l2.push_back(&s2l3);
-		s2c1.mesh = &cube;
+		s2c1.mesh = cube.get();
 		m2.push_back(&s2c1);
 		//transform time dependent
 		LightScene s2{ l2,m2,shadowStamp,lightBlender };
@@ -298,7 +189,7 @@ int main()
 
 		l4.push_back(&s4l1);
 
-		s4c1.mesh = &cube;
+		s4c1.mesh = cube.get();
 		s4c1.transform = glm::translate(glm::scale(glm::mat4{ 1 }, glm::vec3(1.0f, 20.0f, 1.0f)), glm::vec3(-4.0f, 0.0f, 0.0f));
 
 		m4.push_back(&s4c1);
@@ -338,7 +229,7 @@ int main()
 
 		for (int i = 0; i < 49; i++)
 		{
-			s5c[i].mesh = &cube;
+			s5c[i].mesh = cube.get();
 
 			m5.push_back(&s5c[i]);
 		}
@@ -396,8 +287,9 @@ int main()
 		for (int i = 0; i < 49; i++)
 		{
 			glm::mat4 transform{ 1 };
-			transform = glm::rotate(transform, glm::radians((49 - i)*timeValue), glm::vec3(0.0f,0.0f,1.0f));
-			transform = glm::translate(transform, glm::vec3(i+1, 0.0f, 0.0f));
+			float indexRotation = (49 - i)*(49 - i)* (49 - i) /2500.0f;
+			transform = glm::rotate(transform, glm::radians(indexRotation*(timeValue+1000.0f)), glm::vec3(0.0f,0.0f,1.0f));
+			transform = glm::translate(transform, glm::vec3(i+4, 0.0f, 0.0f));
 			s5c[i].transform = transform;
 		}
 
