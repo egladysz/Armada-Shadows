@@ -75,6 +75,8 @@ int main()
 	auto cube = meshReader.loadMesh("Mesh/cube.obj");
 	auto humen = meshReader.loadMesh("Mesh/humen.obj");
 	auto house = meshReader.loadMesh("Mesh/remhaus.obj");
+	auto love = meshReader.loadMesh("Mesh/love.obj");
+	auto remdonut = meshReader.loadMesh("Mesh/remdonut.obj");
 
 	std::vector<LightScene> allScenes;
 
@@ -91,21 +93,22 @@ int main()
 	{
 
 		s1l1.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-		s1l1.lightRadius = 40;
-		s1l1.shadowLength = 40;
+		s1l1.lightRadius = 10;
+		s1l1.shadowLength = 10;
 		s1l1.position = glm::vec3(0.0f, 0.0f, 0.0f);
 		s1l1.on = true;
 		l1.push_back(&s1l1);
 
-		s1c1.mesh = humen.get();
-		s1c1.transform = glm::translate(glm::mat4{ 1 }, glm::vec3(0.0f, -20.0f, 0.0f));
-		
+		s1c1.mesh = remdonut.get();
+		//s1c1.transform = glm::scale(glm::rotate(glm::translate(glm::mat4{ 1 }, glm::vec3(-1.0f, -0.0f, 0.0f)), glm::radians(-90.0f),glm::vec3(0.0f,1.0f,0.0f)),glm::vec3(0.25f,0.25f,0.25f));
+		s1c1.transform = glm::scale(glm::rotate(glm::translate(glm::mat4{ 1 }, glm::vec3(-0.0f, -0.0f, 0.0f)), glm::radians(-90.0f),glm::vec3(0.0f,1.0f,0.0f)),glm::vec3(5.0f,5.0f,5.0f));
+
 		s1c2.mesh = cube.get();
 		//s1c2.transform = glm::scale(glm::rotate(glm::translate(glm::mat4{ 1 }, glm::vec3(0.0f, -2.0f, 0.0f)),glm::radians(45.f),glm::vec3(1.0f,0.5f,0.25f)),glm::vec3(2.0f,0.5f,1.0f));
 		s1c2.transform = glm::scale(glm::translate(glm::mat4{ 1 },glm::vec3(0.0f,-70.0f,0.0f)),glm::vec3(100.0f,100.0f,100.0f));
 
 		m1.push_back(&s1c1);
-		m1.push_back(&s1c2);
+		//m1.push_back(&s1c2);
 
 		LightScene s1{ l1,m1,shadowStamp,lightBlender };
 		allScenes.push_back(s1);

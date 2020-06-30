@@ -78,8 +78,12 @@ std::unique_ptr<Mesh> MeshReaderObj::loadMesh(std::string fileName)
 				std::stof(lineTokens.at(3))));
 		}
 		else if (lineType == "f") {
-			for (int i = 1; i <= 3; i++) {
-				std::stringstream vs(lineTokens.at(i));
+
+			//collect all face vertices used
+			std::vector<FaceVertex> faceVertexLine;
+			for (int i = 1; i < lineTokens.size(); i++) {
+				auto currentToken = lineTokens.at(i);
+				std::stringstream vs(currentToken);
 				FaceVertex fv;
 				std::string token;
 				std::getline(vs, token, '/');
@@ -89,10 +93,34 @@ std::unique_ptr<Mesh> MeshReaderObj::loadMesh(std::string fileName)
 				std::getline(vs, token, ' ');
 				fv.vn_norm = std::stoi(token) - 1;
 
-				int fvIndex = std::find(faceVertList.begin(), faceVertList.end(), fv) - faceVertList.begin();
+				faceVertexLine.push_back(fv);
+			}
+
+			//add all faceVertices in groups of 3 to make each face.
+			//if more than 3, use the previous 2 with the nth;
+			for (int i = 2; i < faceVertexLine.size(); i++) {
+				
+				int fvIndex = std::find(faceVertList.begin(), faceVertList.end(), faceVertexLine.at(0)) - faceVertList.begin();
 				indexList.push_back(fvIndex);
 				if (fvIndex == faceVertList.end() - faceVertList.begin()) {
-					faceVertList.push_back(fv);
+					faceVertList.push_back(faceVertexLine.at(0));
+				}
+				
+				fvIndex = std::find(faceVertList.begin(), faceVertList.end(), faceVertexLine.at(i-1)) - faceVertList.begin();
+				indexList.push_back(fvIndex);
+				if (fvIndex == faceVertList.end() - faceVertList.begin()) {
+					faceVertList.push_back(faceVertexLine.at(i-1));
+				}
+
+				fvIndex = std::find(faceVertList.begin(), faceVertList.end(), faceVertexLine.at(i)) - faceVertList.begin();
+				indexList.push_back(fvIndex);
+				if (fvIndex == faceVertList.end() - faceVertList.begin()) {
+					faceVertList.push_back(faceVertexLine.at(i));
+				}
+
+				
+				for (int j = i; j < i + 3; j++) {
+					
 				}
 			}
 		}
