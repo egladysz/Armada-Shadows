@@ -5,6 +5,7 @@
 #include <glm/glm/gtc/type_ptr.hpp>
 #include <glm/glm/gtc/matrix_transform.hpp>
 #include <map>
+#include <algorithm>
 
 void LightScene::injectViewTransform(Shader shader, glm::mat4 viewMat, unsigned int width, unsigned int height)
 {
@@ -65,20 +66,18 @@ void LightScene::Render(glm::vec3 forward, glm::vec3 position, glm::mat4 viewMat
 
 	static Mesh lightScreen(std::move(lightBox_p), 4, std::move(lightIndex_p), 6);
 
+	
+	auto pairLightDistances = [this,forward,position](SolidLight* light) {
+		float distance = glm::dot(forward, (glm::vec3(this->local * glm::vec4(light->position, 1.0f))) - position);
+		return std::pair<float, SolidLight*>(distance, light);
+	};
+	auto isSeenByCamera = [](std::pair<float, SolidLight*> rangedLight) {
+		return rangedLight.second->on && rangedLight.first >= 0;
+	};
 
-	std::multimap<float, SolidLight*> sortedLights;
-	for (unsigned int i = 0; i < lights.size(); i++)
-	{
-		if (!lights[i]->on) {
-			continue;
-		}
-
-		float distance = glm::dot(forward, (glm::vec3(local*glm::vec4(lights[i]->position,1.0f))) - position);
-		if (distance >= 0)
-		{
-			sortedLights.insert(std::pair<float, SolidLight*>(distance, lights[i]));
-		}
-	}
+	std::vector<std::pair<float, SolidLight*>> unsortedLights(lights.size());
+	std::transform(lights.begin(), lights.end(), unsortedLights.begin(), pairLightDistances);
+	std::remove_if(unsortedLights.begin(), unsortedLights.end(), isSeenByCamera);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -86,7 +85,7 @@ void LightScene::Render(glm::vec3 forward, glm::vec3 position, glm::mat4 viewMat
 
 	glEnable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
-	for (std::multimap<float, SolidLight*>::reverse_iterator it = sortedLights.rbegin(); it != sortedLights.rend(); ++it)
+	for (auto it = unsortedLights.rbegin(); it != unsortedLights.rend(); ++it)
 	{
 		glm::vec3 lp = it->second->position;
 		glm::vec4 lc = it->second->color;
@@ -105,10 +104,8 @@ void LightScene::Render(glm::vec3 forward, glm::vec3 position, glm::mat4 viewMat
 		injectViewTransform(shadowStamp, viewMat, screenWidth,screenHeight);
 
 		//draw objects
-		for (int i = 0; i < models.size(); i++)
-		{
-			models[i]->Draw(shadowStamp);
-		}
+		for (Model* m : models)
+			m->Draw(shadowStamp);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
@@ -134,10 +131,8 @@ void LightScene::RenderObjects(Shader objectShader, glm::mat4 viewMat, unsigned 
 	injectViewTransform(objectShader, viewMat, screenWidth, screenHeight);
 	//draw objects
 	glDisable(GL_BLEND);
-	for (int i = 0; i < models.size(); i++)
-	{
-		models[i]->Draw(objectShader);
-	}
+	for (Model* m: models)
+		m->Draw(objectShader);
 }
 
 

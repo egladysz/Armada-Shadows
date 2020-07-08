@@ -1,24 +1,19 @@
 #include "MeshReaderObj.h"
 #include "Vertex.h"
+#include <algorithm>
 #include <fstream>
 #include <vector>
 #include <sstream>
 #include <iterator>
-//parseLine
-//parseLineV
-//parseLineVt
-//parseLineVn
-//parseLineVp
-//parseLineF
-//parseLineComment
 
-struct FaceVertex
+
+struct UnparsedVertex
 {
 	unsigned int v_pos;
 	unsigned int vt_uv;
 	unsigned int vn_norm;
 
-	bool operator==(const FaceVertex& other) const {
+	bool operator==(const UnparsedVertex& other) const {
 		return 
 			v_pos == other.v_pos && 
 			vt_uv == other.vt_uv && 
@@ -33,15 +28,13 @@ std::unique_ptr<Mesh> MeshReaderObj::loadMesh(std::string fileName)
 	objFile.open(fileName);
 
 	if (!objFile.is_open())
-	{
 		return nullptr;
-	}
 	
 	std::vector<glm::vec3> position;
 	std::vector<glm::vec3> normal;
 	std::vector<glm::vec2> uv;
 
-	std::vector<FaceVertex> faceVertList;
+	std::vector<UnparsedVertex> unparsedVertices;
 	std::vector<Index> indexList;
 
 	std::string line;
@@ -53,89 +46,86 @@ std::unique_ptr<Mesh> MeshReaderObj::loadMesh(std::string fileName)
 		std::istream_iterator<std::string> end;
 
 		std::vector<std::string> lineTokens(start, end);
-		if (!lineTokens.size()) {
+		if (!lineTokens.size())
 			continue;
-		}
+
 		std::string lineType = lineTokens.at(0);
-		if (lineType == "v") {
-			position.push_back(glm::vec3(
-				std::stof(lineTokens.at(1)),
-				std::stof(lineTokens.at(2)),
-				std::stof(lineTokens.at(3))));
-		}
-		else if (lineType == "vt") {
-			uv.push_back(glm::vec2(
-				std::stof(lineTokens.at(1)),
-				std::stof(lineTokens.at(2))));
-		}
-		else if (lineType == "vn") {
-			normal.push_back(glm::vec3(
-				std::stof(lineTokens.at(1)),
-				std::stof(lineTokens.at(2)),
-				std::stof(lineTokens.at(3))));
-		}
+		if (lineType == "v") 
+			position.push_back(glm::vec3(	std::stof(lineTokens.at(1)),
+											std::stof(lineTokens.at(2)),
+											std::stof(lineTokens.at(3))));
+		else if (lineType == "vt")
+			uv.push_back(glm::vec2(	std::stof(lineTokens.at(1)),
+									std::stof(lineTokens.at(2))));
+		else if (lineType == "vn")
+			normal.push_back(glm::vec3( std::stof(lineTokens.at(1)),
+										std::stof(lineTokens.at(2)),
+										std::stof(lineTokens.at(3))));
 		else if (lineType == "f") {
 
-			//collect all face vertices used
-			std::vector<FaceVertex> faceVertexLine;
-			for (int i = 1; i < lineTokens.size(); i++) {
-				auto currentToken = lineTokens.at(i);
-				std::stringstream vs(currentToken);
-				FaceVertex fv;
-				std::string token;
-				std::getline(vs, token, '/');
-				fv.v_pos = std::stoi(token) - 1;
-				std::getline(vs, token, '/');
-				fv.vt_uv = std::stoi(token) - 1;
-				std::getline(vs, token, ' ');
-				fv.vn_norm = std::stoi(token) - 1;
+			auto extractVertexFromLine = [](std::string token) {
+				std::stringstream vs(token);
+				
+				std::string positionToken;
+				std::string uvToken;
+				std::string normalToken;
+				std::getline(vs, positionToken, '/');
+				std::getline(vs, uvToken, '/');
+				std::getline(vs, normalToken, ' ');
 
-				faceVertexLine.push_back(fv);
-			}
+				UnparsedVertex vertex;
+				vertex.v_pos = std::stoi(positionToken) - 1;
+				vertex.vt_uv = std::stoi(uvToken) - 1;
+				vertex.vn_norm = std::stoi(normalToken) - 1;
 
-			//add all faceVertices in groups of 3 to make each face.
-			//each face is the vertices 0,n-1,n in that order
-			int startFvIndex = std::find(faceVertList.begin(), faceVertList.end(), faceVertexLine.at(0)) - faceVertList.begin();
-			if (startFvIndex == faceVertList.end() - faceVertList.begin()) {
-				faceVertList.push_back(faceVertexLine.at(0));
-			}
-			int previousFvIndex = std::find(faceVertList.begin(), faceVertList.end(), faceVertexLine.at(1)) - faceVertList.begin();
-			if (previousFvIndex == faceVertList.end() - faceVertList.begin()) {
-				faceVertList.push_back(faceVertexLine.at(1));
-			}
+				return vertex;
+			};
+			std::vector<UnparsedVertex> lineVertices(lineTokens.size() - 1);
+			std::transform(lineTokens.begin() + 1, lineTokens.end(), lineVertices.begin(),extractVertexFromLine);
+			
 
-			for (int i = 2; i < faceVertexLine.size(); i++) {
-				indexList.push_back(startFvIndex);
-				indexList.push_back(previousFvIndex);
+			auto& firstVertex = lineVertices.at(0);
+			auto& secondVertex = lineVertices.at(1);
 
-				int currentFvIndex = std::find(faceVertList.begin(), faceVertList.end(), faceVertexLine.at(i)) - faceVertList.begin();
-				if (currentFvIndex == faceVertList.end() - faceVertList.begin()) {
-					faceVertList.push_back(faceVertexLine.at(i));
-				}
-				indexList.push_back(currentFvIndex);
+			int firstIndex = std::find(unparsedVertices.begin(), unparsedVertices.end(), firstVertex) - unparsedVertices.begin();
+			if (firstIndex == unparsedVertices.end() - unparsedVertices.begin())
+				unparsedVertices.push_back(firstVertex);
+			int previousIndex = std::find(unparsedVertices.begin(), unparsedVertices.end(), secondVertex) - unparsedVertices.begin();
+			if (previousIndex == unparsedVertices.end() - unparsedVertices.begin())
+				unparsedVertices.push_back(secondVertex);
 
-				previousFvIndex = currentFvIndex;
+			for (int i = 2; i < lineVertices.size(); i++) {
+				indexList.push_back(firstIndex);
+				indexList.push_back(previousIndex);
+
+				auto& currentVertex = lineVertices.at(i);
+				int currentIndex = std::find(unparsedVertices.begin(), unparsedVertices.end(), currentVertex) - unparsedVertices.begin();
+
+				if (currentIndex == unparsedVertices.end() - unparsedVertices.begin())
+					unparsedVertices.push_back(currentVertex);
+				indexList.push_back(currentIndex);
+
+				previousIndex = currentIndex;
 			}
 		}
-		else {
+		else
 			continue;
-		}
 	}
 
-	unsigned int vertexCount = faceVertList.size();
+	unsigned int vertexCount = unparsedVertices.size();
 	auto vertexData = std::make_unique<Vertex[]>(vertexCount);
 
 	for (unsigned int i = 0; i < vertexCount; i++) {
-		vertexData[i].position = position.at(faceVertList.at(i).v_pos);
-		vertexData[i].normal = normal.at(faceVertList.at(i).vn_norm);
-		vertexData[i].uv = uv.at(faceVertList.at(i).vt_uv);
+		vertexData[i].position = position.at(unparsedVertices.at(i).v_pos);
+		vertexData[i].normal = normal.at(unparsedVertices.at(i).vn_norm);
+		vertexData[i].uv = uv.at(unparsedVertices.at(i).vt_uv);
 	}
-	unsigned int indexCount = indexList.size();
 
+	int indexCount = indexList.size();
 	auto indexData = std::make_unique<Index[]>(indexCount);
-	for (unsigned int i = 0; i < indexCount; i++) {
+	for (unsigned int i = 0; i < indexCount; i++)
 		indexData[i] = indexList.at(i);
-	}
+
 	auto mesh = std::make_unique<Mesh>(std::move(vertexData), vertexCount, std::move(indexData), indexCount);
 	return mesh;
 
