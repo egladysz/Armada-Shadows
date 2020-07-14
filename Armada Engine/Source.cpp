@@ -73,6 +73,7 @@ int main()
 	MeshReaderObj meshReader;
 	
 	auto cube = meshReader.loadMesh("Mesh/cube.obj");
+	auto ball = meshReader.loadMesh("Mesh/ball.obj");
 	auto humen = meshReader.loadMesh("Mesh/humen.obj");
 	auto house = meshReader.loadMesh("Mesh/remhaus.obj");
 	auto love = meshReader.loadMesh("Mesh/love.obj");
@@ -232,7 +233,7 @@ int main()
 
 		for (int i = 0; i < 49; i++)
 		{
-			s5c[i].mesh = cube.get();
+			s5c[i].mesh = ball.get();
 
 			m5.push_back(&s5c[i]);
 		}
@@ -240,8 +241,57 @@ int main()
 		s5.local = glm::mat4{1};// glm::translate(glm::mat4{ 1 }, glm::vec3(105.0f, 0.0f, 0.0f));
 		allScenes.push_back(s5);
 	}
-		
+	
+	//Scene 6+7. Solar System (Scene 5 but more realistic)
+	std::vector<Model*> m6;
+	std::vector<SolidLight*> l6;
+	SolidLight s6l[1];
+	Model s6c[1];
 
+	std::vector<Model*> m7;
+	std::vector<SolidLight*> l7;
+	SolidLight s7l[1];
+	Model s7c[8];
+	float auToRadii = 23500.f;
+	float planetScale = 1.f/1000.f;
+	{
+		s6l[0].color = glm::vec4(1.0f, 1.0f, 1.0f, 0.5f);
+
+		s6l[0].lightRadius = 30* auToRadii*planetScale;
+
+		s6l[0].shadowLength = 30* auToRadii*planetScale;
+		s6l[0].on = false;
+
+		l6.push_back(&s6l[0]);
+
+
+		s6c[0].mesh = ball.get();
+		//sun is 0.00465 AU
+		float sunRadii = 0.00465f * 0.0625f * auToRadii;// *planetScale;
+		s6c[0].transform = glm::scale(glm::mat4{ 1 }, glm::vec3(sunRadii, sunRadii, sunRadii));
+		m6.push_back(&s6c[0]);
+
+		LightScene s6{ l6,m6,shadowStamp,lightBlender };
+		s6.local = glm::mat4{ 1 };
+		allScenes.push_back(s6);
+
+
+		s7l[0] = s6l[0];
+		s7l[0].on = true;
+
+		l7.push_back(&s7l[0]);
+
+		for (int i = 0; i < 8; i++)
+		{
+			s7c[i].mesh = ball.get();
+			m7.push_back(&s7c[i]);
+		}
+		
+		LightScene s7{ l7,m7,shadowStamp,lightBlender };
+		s7.local = glm::mat4{ 1 };
+		allScenes.push_back(s7);
+
+	}
 
 	window.setCamera(	glm::vec3(0.0f, 0.0f, 10.0f),
 						glm::vec3(0.0f, 0.0f, -1.0f),
@@ -296,6 +346,46 @@ int main()
 			s5c[i].transform = transform;
 		}
 
+		//Scene 6+7. Better Planetary Shenanigan
+		//translate(rotate(scale))
+		static float translations[8]{
+			0.39f,
+			0.72f,
+			1.0f,
+			1.52f,
+			5.20f,
+			9.58f,
+			19.22f,
+			30.11f,
+		};
+
+		static float scales[8]{
+			0.38f,
+			0.94f,
+			1.0f,
+			0.53f,
+			11.2f,
+			9.45f,
+			4.01f,
+			3.88f
+		};
+
+		//1 AU = 23500 Earth radius
+		
+		
+		for (int i = 0; i < 8; i++)
+		{
+			glm::mat4 transform{ 1 };
+			float orbitMultiplier = 360.0f/std::pow(translations[i]*auToRadii*planetScale, 2.0f/3.0f);
+			float timeOffset = 1000;
+			float scaleMultiplier = scales[i];// *0.125f;//  *planetScale;
+			transform = glm::rotate(transform, glm::radians(orbitMultiplier * (timeValue + timeOffset)), glm::vec3(0.0f, 0.0f, 1.0f));
+			transform = glm::translate(transform, glm::vec3(translations[i]*auToRadii *planetScale, 0.0f, 0.0f));
+			transform = glm::scale(transform, glm::vec3(scaleMultiplier, scaleMultiplier, scaleMultiplier));
+			s7c[i].transform = transform;
+		}
+
+
 		//render
 		
 
@@ -307,6 +397,10 @@ int main()
 
 		auto currentScene = std::vector<LightScene>();
 		currentScene.push_back(allScenes.at(scene - 1));
+		if (scene == 6)
+		{
+			currentScene.push_back(allScenes.at(scene));
+		}
 		window.render(currentScene, simpleShader);
 		currentScene.pop_back();
 		//engage custom frame buffer

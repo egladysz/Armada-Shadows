@@ -134,6 +134,8 @@ void Window::processInput(float deltaTime, bool& paused, int& scene)
 		scene = 4;
 	if (glfwGetKey(glWindow, GLFW_KEY_5) == GLFW_PRESS)
 		scene = 5;
+	if (glfwGetKey(glWindow, GLFW_KEY_6) == GLFW_PRESS)
+		scene = 6;
 
 
 	/*if (glfwGetKey(glWindow, GLFW_KEY_W) == GLFW_PRESS)
