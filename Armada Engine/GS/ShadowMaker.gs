@@ -8,7 +8,8 @@ uniform mat4 viewToProjection;
 uniform vec4 lightPos;
 uniform float shadRad;
 
-vec4 lightTransformPos = (viewToProjection*worldToView*lightPos);
+
+vec4 lightTransformPos = (worldToView*lightPos);
 
 out float shadowAlpha;
 
@@ -16,12 +17,12 @@ vec4 stretchShadow(vec4 point){
 	vec4 distance = (point-lightTransformPos);
 	distance = normalize(distance)*shadRad;
 	vec4 extend = point+distance;
-	return extend;
+	return viewToProjection*extend;
 }
 
 void emitPair(vec4 point) {
 	shadowAlpha = 0.0f;
-	gl_Position = point;
+	gl_Position = viewToProjection*point;
 	EmitVertex();
 
 	shadowAlpha = 1.f;
@@ -41,9 +42,9 @@ void main() {
 
 	//interior (original) triangle
 	shadowAlpha = 0.0f;
-	gl_Position = gl_in[1].gl_Position;
+	gl_Position = viewToProjection*gl_in[1].gl_Position;
 	EmitVertex();
-	gl_Position = gl_in[2].gl_Position;
+	gl_Position = viewToProjection*gl_in[2].gl_Position;
 	EmitVertex();
 
 	//triangle walls

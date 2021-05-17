@@ -7,7 +7,8 @@ uniform mat4 modelToWorld;
 uniform mat4 worldToView;
 uniform mat4 viewToProjection;
 
+
 void main()
 {
-	gl_Position = viewToProjection * worldToView * modelToWorld * vec4(pos, 1.0f);
+	gl_Position = worldToView * modelToWorld * vec4(pos, 1.0f);
 }
