@@ -6,8 +6,8 @@
 #include "SolidLight.h"
 #include "LightScene.h"
 #include "MeshReaderObj.h"
-unsigned int screenWidth = 800;
-unsigned int screenHeight = 600;
+unsigned int screenWidth = 1920;
+unsigned int screenHeight = 1080;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -23,7 +23,7 @@ bool paused = false;
 
 int main()
 {
-	Window window(screenWidth, screenHeight, "Armada Engine - Demo Candidate 2");
+	Window window(screenWidth, screenHeight, "Armada Engine - Demo Candidate 3");
 	//GLFW setup
 	if (!window.initialize())
 	{
@@ -74,10 +74,7 @@ int main()
 	
 	auto cube = meshReader.loadMesh("Mesh/cube.obj");
 	auto ball = meshReader.loadMesh("Mesh/ball.obj");
-	auto humen = meshReader.loadMesh("Mesh/humen.obj");
-	auto house = meshReader.loadMesh("Mesh/remhaus.obj");
-	auto love = meshReader.loadMesh("Mesh/love.obj");
-	auto remdonut = meshReader.loadMesh("Mesh/remdonut.obj");
+	auto star = meshReader.loadMesh("Mesh/star.obj");
 
 	std::vector<LightScene> allScenes;
 
@@ -89,27 +86,20 @@ int main()
 	std::vector<Model*> m1;
 	std::vector<SolidLight*> l1;
 	Model s1c1;
-	Model s1c2;
 	SolidLight s1l1;
 	{
 
-		s1l1.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-		s1l1.lightRadius = 10;
-		s1l1.shadowLength = 10;
+		s1l1.color = glm::vec4(0.5f, 0.5f, 1.0f, 1.0f);
+		s1l1.lightRadius = 15;
+		s1l1.shadowLength = 15;
 		s1l1.position = glm::vec3(0.0f, 0.0f, 0.0f);
 		s1l1.on = true;
 		l1.push_back(&s1l1);
 
-		s1c1.mesh = remdonut.get();
-		//s1c1.transform = glm::scale(glm::rotate(glm::translate(glm::mat4{ 1 }, glm::vec3(-1.0f, -0.0f, 0.0f)), glm::radians(-90.0f),glm::vec3(0.0f,1.0f,0.0f)),glm::vec3(0.25f,0.25f,0.25f));
-		s1c1.transform = glm::scale(glm::rotate(glm::translate(glm::mat4{ 1 }, glm::vec3(-0.0f, -0.0f, 0.0f)), glm::radians(-90.0f),glm::vec3(0.0f,1.0f,0.0f)),glm::vec3(5.0f,5.0f,5.0f));
-
-		s1c2.mesh = cube.get();
-		//s1c2.transform = glm::scale(glm::rotate(glm::translate(glm::mat4{ 1 }, glm::vec3(0.0f, -2.0f, 0.0f)),glm::radians(45.f),glm::vec3(1.0f,0.5f,0.25f)),glm::vec3(2.0f,0.5f,1.0f));
-		s1c2.transform = glm::scale(glm::translate(glm::mat4{ 1 },glm::vec3(0.0f,-70.0f,0.0f)),glm::vec3(100.0f,100.0f,100.0f));
+		s1c1.mesh = star.get();
+		s1c1.transform = glm::rotate(glm::mat4{ 1 }, glm::radians(-90.0f),glm::vec3(1.0f,0.0f,0.0f));
 
 		m1.push_back(&s1c1);
-		//m1.push_back(&s1c2);
 
 		LightScene s1{ l1,m1,shadowStamp,lightBlender };
 		allScenes.push_back(s1);
@@ -123,27 +113,32 @@ int main()
 	SolidLight s2l1;
 	SolidLight s2l2;
 	SolidLight s2l3;
+	SolidLight s2l4;
 	{
-		s2l1.color = glm::vec4(1.0f, 1.0f, 1.0f, 0.5f);
-		s2l1.lightRadius = 5;
+		s2l1.color = glm::vec4(1.0f, 1.0f, 1.0f, 0.25f);
+		s2l1.lightRadius = 20;
 		s2l1.shadowLength = 200;
 		s2l1.on = true;
 
-		s2l2.color = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
-		s2l2.lightRadius = 5;
+		s2l2.color = glm::vec4(1.0f, 0.0f, 1.0f, 0.25f);
+		s2l2.lightRadius = 20;
 		s2l2.shadowLength = 200;
 		s2l2.on = true;
-		s2l2.position.y = -3.0;
 
-		s2l3.color = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
-		s2l3.lightRadius = 5;
+		s2l3.color = glm::vec4(0.0f, 1.0f, 1.0f, 0.25f);
+		s2l3.lightRadius = 20;
 		s2l3.shadowLength = 200;
 		s2l3.on = true;
-		s2l3.position.y = 3.0f;
+
+		s2l4.color = glm::vec4(1.0f, 1.0f, 0.0f, 0.25f);
+		s2l4.lightRadius = 20;
+		s2l4.shadowLength = 200;
+		s2l4.on = true;
 
 		l2.push_back(&s2l1);
 		l2.push_back(&s2l2);
 		l2.push_back(&s2l3);
+		l2.push_back(&s2l4);
 		s2c1.mesh = cube.get();
 		m2.push_back(&s2c1);
 		//transform time dependent
@@ -184,19 +179,29 @@ int main()
 	std::vector<Model*> m4;
 	std::vector<SolidLight*> l4;
 	SolidLight s4l1;
-	Model s4c1;
+	Model s4c[40];
 	{
 		s4l1.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		s4l1.lightRadius = 40;
-		s4l1.shadowLength = 20;
+		s4l1.shadowLength = 10;
 		s4l1.on = true;
 
 		l4.push_back(&s4l1);
 
-		s4c1.mesh = cube.get();
-		s4c1.transform = glm::translate(glm::scale(glm::mat4{ 1 }, glm::vec3(1.0f, 20.0f, 1.0f)), glm::vec3(-4.0f, 0.0f, 0.0f));
+		for (int i = 0; i < 40; i++)
+		{
+			s4c[i].mesh = cube.get();
 
-		m4.push_back(&s4c1);
+			m4.push_back(&s4c[i]);
+		}
+		
+
+		//s4c1.transform = glm::translate(glm::scale(glm::mat4{ 1 }, glm::vec3(1.0f, 20.0f, 1.0f)), glm::vec3(-4.0f, 0.0f, 0.0f));
+
+		//s4c1.transform = glm::scale(glm::mat4{ 1 }, glm::vec3(0.25f, 5.0f, 0.25f));
+
+
+		//m4.push_back(&s4c1);
 		LightScene s4{ l4,m4,shadowStamp,lightBlender };
 		s4.local = glm::mat4{ 1 };// glm::translate(glm::mat4{ 1 }, glm::vec3(40.0f, 0.0f, 0.0f));
 		allScenes.push_back(s4);
@@ -215,7 +220,7 @@ int main()
 
 		s5l[0].lightRadius = 20;
 		s5l[1].lightRadius = 35;
-		s5l[2].lightRadius = 50;
+		s5l[2].lightRadius = 500;
 
 		s5l[0].shadowLength = 50;
 		s5l[1].shadowLength = 50;
@@ -255,12 +260,10 @@ int main()
 	float auToRadii = 23500.f;
 	float planetScale = 1.f/1000.f;
 	{
-		s6l[0].color = glm::vec4(1.0f, 1.0f, 1.0f, 0.5f);
-
+		s6l[0].color = glm::vec4(0.0f, 0.5f, 1.0f, 0.5f);
 		s6l[0].lightRadius = 30* auToRadii*planetScale;
-
-		s6l[0].shadowLength = 30* auToRadii*planetScale;
-		s6l[0].on = false;
+		s6l[0].shadowLength = 3* auToRadii*planetScale;
+		s6l[0].on = true;
 
 		l6.push_back(&s6l[0]);
 
@@ -276,7 +279,9 @@ int main()
 		allScenes.push_back(s6);
 
 
-		s7l[0] = s6l[0];
+		s7l[0].color = glm::vec4(1.0f, 0.0f, 0.0f, 0.1f);
+		s7l[0].lightRadius = 3 * auToRadii * planetScale;
+		s7l[0].shadowLength = 30 * auToRadii * planetScale;
 		s7l[0].on = true;
 
 		l7.push_back(&s7l[0]);
@@ -324,11 +329,19 @@ int main()
 		}
 
 		//Scene 1. No time component
+		s1c1.transform = glm::rotate(glm::rotate(glm::scale(glm::mat4{ 1 },glm::vec3(5.0f)), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::radians(5 * timeValue), glm::vec3(0.0f, 1.0f, 0.0f));
 		s1l1.position.z = 0;// 5 * cos(glm::radians(30 * timeValue));
 
 		//Scene 2. Orbiting cube
-		s2c1.transform = glm::translate(glm::rotate(glm::mat4{1}, glm::radians(90 * timeValue), glm::vec3(0.0f, 0.0f, 1.0f)),glm::vec3(2.0f,0.0f,0.0f));
-		s2l1.position.x = 5*cos(glm::radians(30 * timeValue));
+		s2c1.transform = glm::translate(glm::rotate(glm::mat4{1}, glm::radians(-90 * timeValue), glm::vec3(0.0f, 0.0f, 1.0f)),glm::vec3(2.0f,0.0f,0.0f));
+		
+		s2l1.position.x = -10 * sin(glm::radians(30 * timeValue));
+		s2l1.position.y = 10 * cos(glm::radians(30 * timeValue));
+		s2l2.position.x = 10 * cos(glm::radians(30 * timeValue));
+		s2l2.position.y = 10 * sin(glm::radians(30 * timeValue));
+		s2l3.position = -s2l2.position;
+		s2l4.position = -s2l1.position;
+
 		//Scene 3. No time componentd
 
 		//Scene 4. Flickering Light
@@ -336,13 +349,30 @@ int main()
 		s4l1.color.g = cos(3*timeValue);
 		s4l1.color.b = cos(5 * timeValue) + 1.5f;
 
+		s4l1.color.a = 0.5f;
+
+		s4l1.color.r = 0.1f;
+		s4l1.color.g = 0.4f;
+		s4l1.color.b = 0.5f;
+		s4l1.position.z = -10;
+
+		//s4c1.transform = glm::scale(glm::rotate(glm::mat4{ 1 }, glm::radians(60 * timeValue), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(0.25f, 5.0f, 0.25f));
+		srand(9);
+		for (int i = 0; i < 40; i++)
+		{
+			glm::mat4 transform{ 1 };
+			transform = glm::translate(transform, glm::vec3(19.5f - i, -fmod(((3.0f*timeValue))+i* rand()%40, 30.0) + 15.0f, 0.0f));
+			transform = glm::rotate(transform, glm::radians(timeValue*36.0f)+i* rand() % 40, glm::vec3(1.0f, 0.0f, 0.0f));
+			s4c[i].transform = glm::scale(transform, glm::vec3(0.25f, 5.0f, 0.25f));
+		}
+
 		//Scene 5. Planerary Shenanigan
 		for (int i = 0; i < 49; i++)
 		{
 			glm::mat4 transform{ 1 };
 			float indexRotation = (49 - i)*(49 - i)* (49 - i) /2500.0f;
 			transform = glm::rotate(transform, glm::radians(indexRotation*(timeValue+1000.0f)), glm::vec3(0.0f,0.0f,1.0f));
-			transform = glm::translate(transform, glm::vec3(i+4, 0.0f, 0.0f));
+			transform = glm::scale(glm::translate(transform, glm::vec3(i+4, 0.0f, 0.0f)),glm::vec3(0.5f,0.5f,0.5f));
 			s5c[i].transform = transform;
 		}
 

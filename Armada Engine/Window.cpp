@@ -21,7 +21,7 @@ Window::Window(int width, int height, std::string header)
 	frameTextureID = 0;
 	renderBufferID = 0;
 
-	cameraSpeed = 20.0f;
+	cameraSpeed = 2.0f;
 }
 
 bool Window::initialize()
@@ -32,7 +32,23 @@ bool Window::initialize()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+
+	auto monitor = glfwGetPrimaryMonitor();
+
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+	//glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+	//glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+	//glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+	//glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+	//glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+
+
+
 	glWindow = glfwCreateWindow(screenWidth, screenHeight, title.c_str(), NULL, NULL);
+	//glWindow = glfwCreateWindow(mode->width, mode->height, title.c_str(), monitor, NULL);
+
 	if (glWindow == NULL)
 	{
 		std::cout << "GLFW window creation failed" << std::endl;

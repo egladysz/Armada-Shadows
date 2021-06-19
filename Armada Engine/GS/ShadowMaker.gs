@@ -13,50 +13,44 @@ vec4 lightTransformPos = (worldToView*lightPos);
 
 out float shadowAlpha;
 
-vec4 stretchShadow(vec4 point){
-	vec4 distance = (point-lightTransformPos);
-	distance = normalize(distance)*shadRad;
-	vec4 extend = point+distance;
-	return viewToProjection*extend;
-}
-
-void emitPair(vec4 point) {
+void emitCloseVertex(vec4 point){
 	shadowAlpha = 0.0f;
 	gl_Position = viewToProjection*point;
 	EmitVertex();
+}
 
-	shadowAlpha = 1.f;
-	vec4 dir = stretchShadow(point);
-	gl_Position = dir;
+void emitFarVertex(vec4 point){
+	shadowAlpha = 1.0f;
+	vec4 distance = (point-lightTransformPos);
+	distance = normalize(distance)*shadRad;
+	vec4 extend = point+distance;
+	gl_Position = viewToProjection*extend;
 	EmitVertex();
 }
 
-void project_out(vec4 pointA, vec4 pointB, vec4 pointC){
+void emitPair(vec4 point) {
+	emitCloseVertex(point);
+	emitFarVertex(point);
+}
+
+void emitWalls(vec4 pointA, vec4 pointB, vec4 pointC){
 	emitPair(pointA);
 	emitPair(pointB);
 	emitPair(pointC);
 }
 
 void main() {
-
-
 	//interior (original) triangle
-	shadowAlpha = 0.0f;
-	gl_Position = viewToProjection*gl_in[1].gl_Position;
-	EmitVertex();
-	gl_Position = viewToProjection*gl_in[2].gl_Position;
-	EmitVertex();
-
+	emitCloseVertex(gl_in[1].gl_Position);
+	emitCloseVertex(gl_in[2].gl_Position);
+	
 	//triangle walls
-	project_out(gl_in[0].gl_Position,
+	emitWalls(	gl_in[0].gl_Position,
 				gl_in[1].gl_Position,
 				gl_in[2].gl_Position);
 
 	//Exterior (at infinity) triangle
-	shadowAlpha = 1.f;
-	gl_Position = stretchShadow(gl_in[0].gl_Position);
-	EmitVertex();
-	gl_Position = stretchShadow(gl_in[1].gl_Position);
-	EmitVertex();
+	emitFarVertex(gl_in[0].gl_Position);
+	emitFarVertex(gl_in[1].gl_Position);
 	EndPrimitive();
 }

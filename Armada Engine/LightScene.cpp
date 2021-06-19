@@ -12,7 +12,7 @@ void LightScene::injectViewTransform(Shader shader, glm::mat4 viewMat, unsigned 
 	glm::mat4 view;
 	view = viewMat*local;
 	glm::mat4 proj;
-	proj = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 1.0f, 10000.0f);
+	proj = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.01f, 10000.0f);
 	GLID viewLoc = glGetUniformLocation(shader.ID, "worldToView");
 	GLID projLoc = glGetUniformLocation(shader.ID, "viewToProjection");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
