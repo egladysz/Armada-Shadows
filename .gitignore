@@ -337,7 +337,7 @@ ASALocalRun/
 .localhistory/
 
 # Keep .obj Models but not compiled .obj files
-!Mesh/*.obj
+!Armada Engine/Mesh/*.obj
 
 # BeatPulse healthcheck temp database
 healthchecksdb
