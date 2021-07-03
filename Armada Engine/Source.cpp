@@ -6,6 +6,7 @@
 #include "SolidLight.h"
 #include "LightScene.h"
 #include "MeshReaderObj.h"
+#include "Agent.h"
 unsigned int screenWidth = 1920;
 unsigned int screenHeight = 1080;
 
@@ -79,36 +80,40 @@ int main()
 	std::vector<LightScene> allScenes;
 
 
-	//Scene 0: a tiny cube that tracks the scene 1 light
+	//Agents that updates time-dependant components
+	std::vector<Agent<Model>> am;
+	std::vector<Agent<SolidLight>> al;
 
-
-	//Scene 1: One light, 2 static objects
+	//Scene 1: 1 light, 1 Rotating Star
 	std::vector<Model*> m1;
 	std::vector<SolidLight*> l1;
+
 	Model s1c1;
 	SolidLight s1l1;
 	{
-
+		
 		s1l1.color = glm::vec4(0.5f, 0.5f, 1.0f, 1.0f);
 		s1l1.lightRadius = 15;
 		s1l1.shadowLength = 15;
 		s1l1.position = glm::vec3(0.0f, 0.0f, 0.0f);
 		s1l1.on = true;
 		l1.push_back(&s1l1);
-
+		
 		s1c1.mesh = star.get();
 		s1c1.transform = glm::rotate(glm::mat4{ 1 }, glm::radians(-90.0f),glm::vec3(1.0f,0.0f,0.0f));
-
 		m1.push_back(&s1c1);
+		am.push_back(Agent<Model>(s1c1, [](Model& m, float time) {
+			m.transform = glm::rotate(glm::rotate(glm::scale(glm::mat4{ 1 }, glm::vec3(5.0f)), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::radians(5 * time), glm::vec3(0.0f, 1.0f, 0.0f));
+			}));
 
 		LightScene s1{ l1,m1,shadowStamp,lightBlender };
 		allScenes.push_back(s1);
 	}
 
-	//Scene 2: One light, one orbiting object
-
+	//Scene 2: 4 lights, one orbiting object
 	std::vector<Model*> m2;
 	std::vector<SolidLight*> l2;
+
 	Model s2c1;
 	SolidLight s2l1;
 	SolidLight s2l2;
@@ -139,11 +144,33 @@ int main()
 		l2.push_back(&s2l2);
 		l2.push_back(&s2l3);
 		l2.push_back(&s2l4);
+
+
+		al.push_back(Agent<SolidLight>(s2l1, [](SolidLight& l, float time) {
+			l.position.x = -10 * sin(glm::radians(30 * time));
+			l.position.y = 10 * cos(glm::radians(30 * time));
+			}));
+		al.push_back(Agent<SolidLight>(s2l2, [](SolidLight& l, float time) {
+			l.position.x = 10 * cos(glm::radians(30 * time));
+			l.position.y = 10 * sin(glm::radians(30 * time));
+			}));
+		al.push_back(Agent<SolidLight>(s2l3, [](SolidLight& l, float time) {
+			l.position.x = 10 * sin(glm::radians(30 * time));
+			l.position.y = -10 * cos(glm::radians(30 * time));
+			}));
+		al.push_back(Agent<SolidLight>(s2l4, [](SolidLight& l, float time) {
+			l.position.x = -10 * cos(glm::radians(30 * time));
+			l.position.y = -10 * sin(glm::radians(30 * time));
+			}));
+
 		s2c1.mesh = cube.get();
 		m2.push_back(&s2c1);
+		am.push_back(Agent<Model>(s2c1, [](Model& m, float time) {
+			m.transform = glm::translate(glm::rotate(glm::mat4{ 1 }, glm::radians(-90 * time), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(2.0f, 0.0f, 0.0f));
+			}));
+
 		//transform time dependent
 		LightScene s2{ l2,m2,shadowStamp,lightBlender };
-		s2.local = glm::mat4{ 1 };// glm::translate(glm::mat4{ 1 }, glm::vec3(15.0f, 0.0f, 0.0f));
 		allScenes.push_back(s2);
 	}
 
@@ -175,31 +202,35 @@ int main()
 		allScenes.push_back(s3);
 	}
 
-	//Scene 4: One Light of varying intensity, one wall
+	//Scene 4: One Light, Falling Sticks
 	std::vector<Model*> m4;
 	std::vector<SolidLight*> l4;
+
 	SolidLight s4l1;
 	Model s4c[40];
 	{
-		s4l1.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		s4l1.color = glm::vec4(0.1f, 0.4f, 0.5f, 0.5f);
+		s4l1.position.z = -10;
 		s4l1.lightRadius = 40;
 		s4l1.shadowLength = 10;
 		s4l1.on = true;
 
 		l4.push_back(&s4l1);
 
-		for (int i = 0; i < 40; i++)
-		{
+		srand(9);
+		for (int i = 0; i < 40; i++){
 			s4c[i].mesh = cube.get();
-
 			m4.push_back(&s4c[i]);
+			int rand1 = rand();
+			int rand2 = rand();
+
+			am.push_back(Agent<Model>(s4c[i], [rand1, rand2, i](Model& m, float time) {
+				glm::mat4 transform{ 1 };
+				transform = glm::translate(transform, glm::vec3(19.5f - i, -fmod(((3.0f * time)) + i * rand1 % 40, 30.0) + 15.0f, 0.0f));
+				transform = glm::rotate(transform, glm::radians(time * 36.0f) + i * rand2 % 40, glm::vec3(1.0f, 0.0f, 0.0f));
+				m.transform = glm::scale(transform, glm::vec3(0.25f, 5.0f, 0.25f));
+				}));
 		}
-		
-
-		//s4c1.transform = glm::translate(glm::scale(glm::mat4{ 1 }, glm::vec3(1.0f, 20.0f, 1.0f)), glm::vec3(-4.0f, 0.0f, 0.0f));
-
-		//s4c1.transform = glm::scale(glm::mat4{ 1 }, glm::vec3(0.25f, 5.0f, 0.25f));
-
 
 		//m4.push_back(&s4c1);
 		LightScene s4{ l4,m4,shadowStamp,lightBlender };
@@ -211,6 +242,7 @@ int main()
 	//Scene 5: A few lights. Numerous objects. All mayhem
 	std::vector<Model*> m5;
 	std::vector<SolidLight*> l5;
+
 	SolidLight s5l[3];
 	Model s5c[49];
 	{
@@ -236,14 +268,21 @@ int main()
 		l5.push_back(&s5l[1]);
 		l5.push_back(&s5l[2]);
 
-		for (int i = 0; i < 49; i++)
-		{
+
+		for (int i = 0; i < 49; i++){
 			s5c[i].mesh = ball.get();
 
 			m5.push_back(&s5c[i]);
+			am.push_back(Agent<Model>(s5c[i], [i](Model& m, float time) {
+				glm::mat4 transform{ 1 };
+				float indexRotation = (49 - i) * (49 - i) * (49 - i) / 2500.0f;
+				transform = glm::rotate(transform, glm::radians(indexRotation * (time + 1000.0f)), glm::vec3(0.0f, 0.0f, 1.0f));
+				transform = glm::scale(glm::translate(transform, glm::vec3(i + 4, 0.0f, 0.0f)), glm::vec3(0.5f, 0.5f, 0.5f));
+				m.transform = transform;
+				}));
 		}
+
 		LightScene s5{ l5,m5,shadowStamp,lightBlender };
-		s5.local = glm::mat4{1};// glm::translate(glm::mat4{ 1 }, glm::vec3(105.0f, 0.0f, 0.0f));
 		allScenes.push_back(s5);
 	}
 	
@@ -256,7 +295,17 @@ int main()
 	std::vector<Model*> m7;
 	std::vector<SolidLight*> l7;
 	SolidLight s7l[1];
-	Model s7c[8];
+	std::vector<std::pair<float, float>> translationAndScale = {
+			std::pair<float,float>(0.39f,0.38f),
+			std::pair<float,float>(0.72f, 0.94f),
+			std::pair<float,float>(1.0f,  1.0f),
+			std::pair<float,float>(1.52f, 0.53f),
+			std::pair<float,float>(5.20f, 11.2f),
+			std::pair<float,float>(9.58f, 9.45f),
+			std::pair<float,float>(19.22f,4.01f),
+			std::pair<float,float>(30.11f,3.88f)
+	};
+	std::vector<Model> s7c(translationAndScale.size());
 	float auToRadii = 23500.f;
 	float planetScale = 1.f/1000.f;
 	{
@@ -286,12 +335,25 @@ int main()
 
 		l7.push_back(&s7l[0]);
 
-		for (int i = 0; i < 8; i++)
+		
+		//1 AU = 23500 Earth radius
+		for (int i = 0; i < translationAndScale.size(); i++)
 		{
 			s7c[i].mesh = ball.get();
 			m7.push_back(&s7c[i]);
+			auto TaS = translationAndScale[i];
+			am.push_back(Agent<Model>(s7c[i], [TaS,auToRadii,planetScale](Model& m, float time) {
+				glm::mat4 transform{ 1 };
+				float orbitMultiplier = 360.0f / std::pow(TaS.first * auToRadii * planetScale, 2.0f / 3.0f);
+				float timeOffset = 1000;
+				float scaleMultiplier = TaS.second;// *0.125f;//  *planetScale;
+				transform = glm::rotate(transform, glm::radians(orbitMultiplier * (time + timeOffset)), glm::vec3(0.0f, 0.0f, 1.0f));
+				transform = glm::translate(transform, glm::vec3(TaS.first * auToRadii * planetScale, 0.0f, 0.0f));
+				transform = glm::scale(transform, glm::vec3(scaleMultiplier, scaleMultiplier, scaleMultiplier));
+				m.transform = transform;
+				}));
 		}
-		
+
 		LightScene s7{ l7,m7,shadowStamp,lightBlender };
 		s7.local = glm::mat4{ 1 };
 		allScenes.push_back(s7);
@@ -301,11 +363,6 @@ int main()
 	window.setCamera(	glm::vec3(0.0f, 0.0f, 10.0f),
 						glm::vec3(0.0f, 0.0f, -1.0f),
 						glm::vec3(0.0f,1.0f,0.0f));
-
-
-
-
-
 
 	while (!glfwWindowShouldClose(window.glWindow))
 	{
@@ -328,102 +385,14 @@ int main()
 			timeValue = 0;
 		}
 
-		//Scene 1. No time component
-		s1c1.transform = glm::rotate(glm::rotate(glm::scale(glm::mat4{ 1 },glm::vec3(5.0f)), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::radians(5 * timeValue), glm::vec3(0.0f, 1.0f, 0.0f));
-		s1l1.position.z = 0;// 5 * cos(glm::radians(30 * timeValue));
-
-		//Scene 2. Orbiting cube
-		s2c1.transform = glm::translate(glm::rotate(glm::mat4{1}, glm::radians(-90 * timeValue), glm::vec3(0.0f, 0.0f, 1.0f)),glm::vec3(2.0f,0.0f,0.0f));
-		
-		s2l1.position.x = -10 * sin(glm::radians(30 * timeValue));
-		s2l1.position.y = 10 * cos(glm::radians(30 * timeValue));
-		s2l2.position.x = 10 * cos(glm::radians(30 * timeValue));
-		s2l2.position.y = 10 * sin(glm::radians(30 * timeValue));
-		s2l3.position = -s2l2.position;
-		s2l4.position = -s2l1.position;
-
-		//Scene 3. No time componentd
-
-		//Scene 4. Flickering Light
-		s4l1.color.a = 0.5f+0.5f*sin(timeValue*8);
-		s4l1.color.g = cos(3*timeValue);
-		s4l1.color.b = cos(5 * timeValue) + 1.5f;
-
-		s4l1.color.a = 0.5f;
-
-		s4l1.color.r = 0.1f;
-		s4l1.color.g = 0.4f;
-		s4l1.color.b = 0.5f;
-		s4l1.position.z = -10;
-
-		//s4c1.transform = glm::scale(glm::rotate(glm::mat4{ 1 }, glm::radians(60 * timeValue), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(0.25f, 5.0f, 0.25f));
-		srand(9);
-		for (int i = 0; i < 40; i++)
-		{
-			glm::mat4 transform{ 1 };
-			transform = glm::translate(transform, glm::vec3(19.5f - i, -fmod(((3.0f*timeValue))+i* rand()%40, 30.0) + 15.0f, 0.0f));
-			transform = glm::rotate(transform, glm::radians(timeValue*36.0f)+i* rand() % 40, glm::vec3(1.0f, 0.0f, 0.0f));
-			s4c[i].transform = glm::scale(transform, glm::vec3(0.25f, 5.0f, 0.25f));
-		}
-
-		//Scene 5. Planerary Shenanigan
-		for (int i = 0; i < 49; i++)
-		{
-			glm::mat4 transform{ 1 };
-			float indexRotation = (49 - i)*(49 - i)* (49 - i) /2500.0f;
-			transform = glm::rotate(transform, glm::radians(indexRotation*(timeValue+1000.0f)), glm::vec3(0.0f,0.0f,1.0f));
-			transform = glm::scale(glm::translate(transform, glm::vec3(i+4, 0.0f, 0.0f)),glm::vec3(0.5f,0.5f,0.5f));
-			s5c[i].transform = transform;
-		}
-
-		//Scene 6+7. Better Planetary Shenanigan
-		//translate(rotate(scale))
-		static float translations[8]{
-			0.39f,
-			0.72f,
-			1.0f,
-			1.52f,
-			5.20f,
-			9.58f,
-			19.22f,
-			30.11f,
-		};
-
-		static float scales[8]{
-			0.38f,
-			0.94f,
-			1.0f,
-			0.53f,
-			11.2f,
-			9.45f,
-			4.01f,
-			3.88f
-		};
-
-		//1 AU = 23500 Earth radius
-		
-		
-		for (int i = 0; i < 8; i++)
-		{
-			glm::mat4 transform{ 1 };
-			float orbitMultiplier = 360.0f/std::pow(translations[i]*auToRadii*planetScale, 2.0f/3.0f);
-			float timeOffset = 1000;
-			float scaleMultiplier = scales[i];// *0.125f;//  *planetScale;
-			transform = glm::rotate(transform, glm::radians(orbitMultiplier * (timeValue + timeOffset)), glm::vec3(0.0f, 0.0f, 1.0f));
-			transform = glm::translate(transform, glm::vec3(translations[i]*auToRadii *planetScale, 0.0f, 0.0f));
-			transform = glm::scale(transform, glm::vec3(scaleMultiplier, scaleMultiplier, scaleMultiplier));
-			s7c[i].transform = transform;
-		}
-
+		for (auto a : am) a.update(timeValue);
+		for (auto a : al) a.update(timeValue);
 
 		//render
 		
-
-
 		// 0. copy our vertices array in a buffer for OpenGL to use
 		// 1. then set the vertex attributes pointers
 		// 2. use our shader program when we want to render an object
-
 
 		auto currentScene = std::vector<LightScene>();
 		currentScene.push_back(allScenes.at(scene - 1));

@@ -178,6 +178,7 @@ robocopy $(ProjectDir)GS $(TargetDir)GS</Command>
     <ClInclude Include="MeshReader.h" />
     <ClInclude Include="MeshReaderObj.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="Agent.h" />
     <ClInclude Include="ModelController.h" />
     <ClInclude Include="ShaderElement.h" />
     <ClInclude Include="SolidLight.h" />

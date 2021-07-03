@@ -134,6 +134,9 @@
     <ClInclude Include="MeshReaderObj.h">
       <Filter>IO</Filter>
     </ClInclude>
+    <ClInclude Include="Agent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="FS\Simple.fs">
