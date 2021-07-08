@@ -102,8 +102,26 @@ int main()
 		s1c1.mesh = star.get();
 		s1c1.transform = glm::rotate(glm::mat4{ 1 }, glm::radians(-90.0f),glm::vec3(1.0f,0.0f,0.0f));
 		m1.push_back(&s1c1);
-		am.push_back(Agent<Model>(s1c1, [](Model& m, float time) {
-			m.transform = glm::rotate(glm::rotate(glm::scale(glm::mat4{ 1 }, glm::vec3(5.0f)), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::radians(5 * time), glm::vec3(0.0f, 1.0f, 0.0f));
+		auto& gl = window.glWindow;
+		am.push_back(Agent<Model>(s1c1, [gl](Model& m, float time) {
+			static auto currDisp = glm::vec3(0.0f);
+			float starSpeed = 2.0f*deltaTime;
+			auto displacement = glm::vec3(0.0f);
+			if (glfwGetKey(gl, GLFW_KEY_UP) == GLFW_PRESS)
+				displacement.y += starSpeed;
+			if (glfwGetKey(gl, GLFW_KEY_DOWN) == GLFW_PRESS)
+				displacement.y -= starSpeed;
+			if (glfwGetKey(gl, GLFW_KEY_LEFT) == GLFW_PRESS)
+				displacement.x -= starSpeed;
+			if (glfwGetKey(gl, GLFW_KEY_RIGHT) == GLFW_PRESS)
+				displacement.x += starSpeed;
+			if (glfwGetKey(gl, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)
+				displacement.z += starSpeed;
+			if (glfwGetKey(gl, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS)
+				displacement.z -= starSpeed;
+
+			currDisp += displacement;
+			m.transform = glm::rotate(glm::rotate(glm::scale(glm::translate(glm::mat4{ 1 }, currDisp), glm::vec3(5.0f)), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::radians(5 * time), glm::vec3(0.0f, 1.0f, 0.0f));
 			}));
 
 		LightScene s1{ l1,m1,shadowStamp,lightBlender };
@@ -198,7 +216,6 @@ int main()
 		l3.push_back(&s3l3);
 
 		LightScene s3{ l3,m3,shadowStamp,lightBlender };
-		s3.local = glm::mat4{ 1 };// glm::translate(glm::mat4{ 1 }, glm::vec3(30.0f, 0.0f, 0.0f));
 		allScenes.push_back(s3);
 	}
 

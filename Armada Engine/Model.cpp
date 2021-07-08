@@ -13,7 +13,7 @@ Model::~Model()
 {
 }
 
-void Model::Draw(Shader shader) const
+void Model::Draw(const Shader shader) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "modelToWorld") , 1, GL_FALSE, glm::value_ptr(transform));
 	mesh->Draw(shader);
