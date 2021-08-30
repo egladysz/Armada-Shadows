@@ -203,7 +203,7 @@ void Window::render(std::vector<LightScene> scenes, Shader objectShader)
 
 	for (LightScene s : scenes)
 	{
-		s.Render(cam.getForward(), cam.getPosition(), cam.getView(), frameBufferID, frameTextureID, screenWidth, screenHeight);
+		s.Render(cam.getView(), frameBufferID, frameTextureID, screenWidth, screenHeight);
 	}
 
 	for (LightScene s : scenes)

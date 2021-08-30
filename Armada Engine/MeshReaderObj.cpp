@@ -87,10 +87,10 @@ std::unique_ptr<Mesh> MeshReaderObj::loadMesh(std::string fileName)
 			auto& firstVertex = lineVertices.at(0);
 			auto& secondVertex = lineVertices.at(1);
 
-			int firstIndex = std::find(unparsedVertices.begin(), unparsedVertices.end(), firstVertex) - unparsedVertices.begin();
+			auto firstIndex = std::find(unparsedVertices.begin(), unparsedVertices.end(), firstVertex) - unparsedVertices.begin();
 			if (firstIndex == unparsedVertices.end() - unparsedVertices.begin())
 				unparsedVertices.push_back(firstVertex);
-			int previousIndex = std::find(unparsedVertices.begin(), unparsedVertices.end(), secondVertex) - unparsedVertices.begin();
+			auto previousIndex = std::find(unparsedVertices.begin(), unparsedVertices.end(), secondVertex) - unparsedVertices.begin();
 			if (previousIndex == unparsedVertices.end() - unparsedVertices.begin())
 				unparsedVertices.push_back(secondVertex);
 
@@ -99,7 +99,7 @@ std::unique_ptr<Mesh> MeshReaderObj::loadMesh(std::string fileName)
 				indexList.push_back(previousIndex);
 
 				auto& currentVertex = lineVertices.at(i);
-				int currentIndex = std::find(unparsedVertices.begin(), unparsedVertices.end(), currentVertex) - unparsedVertices.begin();
+				auto currentIndex = std::find(unparsedVertices.begin(), unparsedVertices.end(), currentVertex) - unparsedVertices.begin();
 
 				if (currentIndex == unparsedVertices.end() - unparsedVertices.begin())
 					unparsedVertices.push_back(currentVertex);
@@ -112,18 +112,18 @@ std::unique_ptr<Mesh> MeshReaderObj::loadMesh(std::string fileName)
 			continue;
 	}
 
-	unsigned int vertexCount = unparsedVertices.size();
+	size_t vertexCount = unparsedVertices.size();
 	auto vertexData = std::make_unique<Vertex[]>(vertexCount);
 
-	for (unsigned int i = 0; i < vertexCount; i++) {
+	for (size_t i = 0; i < vertexCount; i++) {
 		vertexData[i].position = position.at(unparsedVertices.at(i).v_pos);
 		vertexData[i].normal = normal.at(unparsedVertices.at(i).vn_norm);
 		vertexData[i].uv = uv.at(unparsedVertices.at(i).vt_uv);
 	}
 
-	int indexCount = indexList.size();
+	size_t indexCount = indexList.size();
 	auto indexData = std::make_unique<Index[]>(indexCount);
-	for (unsigned int i = 0; i < indexCount; i++)
+	for (size_t i = 0; i < indexCount; i++)
 		indexData[i] = indexList.at(i);
 
 	auto mesh = std::make_unique<Mesh>(std::move(vertexData), vertexCount, std::move(indexData), indexCount);

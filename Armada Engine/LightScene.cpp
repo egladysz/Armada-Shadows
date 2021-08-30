@@ -33,7 +33,7 @@ void LightScene::injectViewTransformNearAlign(Shader shader, glm::mat4 viewMat, 
 	glUniform1f(nearLoc, nearPlaneDistance);
 }
 
-void LightScene::Render(glm::vec3 forward, glm::vec3 position, glm::mat4 viewMat, GLID frameBufferID, GLID frameTextureID, unsigned int screenWidth, unsigned int screenHeight)
+void LightScene::Render(glm::mat4 viewMat, GLID frameBufferID, GLID frameTextureID, unsigned int screenWidth, unsigned int screenHeight)
 {
 	static Vertex lightBox[4] = {
 		{ glm::vec3(1.0f, 1.0f, 0.0f),
@@ -66,34 +66,26 @@ void LightScene::Render(glm::vec3 forward, glm::vec3 position, glm::mat4 viewMat
 
 	static Mesh lightScreen(std::move(lightBox_p), 4, std::move(lightIndex_p), 6);
 
-	
-	auto pairLightDistances = [this,forward,position](SolidLight* light) {
-		float distance = glm::dot(forward, (glm::vec3(this->local * glm::vec4(light->position, 1.0f))) - position);
-		return std::pair<float, SolidLight*>(distance, light);
-	};
-	auto isSeenByCamera = [](std::pair<float, SolidLight*> rangedLight) {
-		return rangedLight.second->on && rangedLight.first >= 0;
-	};
-
-	std::vector<std::pair<float, SolidLight*>> unsortedLights(lights.size());
-	std::transform(lights.begin(), lights.end(), unsortedLights.begin(), pairLightDistances);
-	std::remove_if(unsortedLights.begin(), unsortedLights.end(), isSeenByCamera);
-
+	//clear frameBuffer to black in case there are no lights
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
-	for (auto it = unsortedLights.rbegin(); it != unsortedLights.rend(); ++it)
-	{
-		glm::vec3 lp = it->second->position;
-		glm::vec4 lc = it->second->color;
-		float lr = it->second->lightRadius;
-		float ls = it->second->shadowLength;
+
+	for (SolidLight* light : lights) {
+		if (!light->on) return;
+
+		glm::vec3 lp = light->position;
+		glm::vec4 lc = light->color;
+		float lr = light->lightRadius;
+		float ls = light->shadowLength;
+
+		//fill frameBuffer with light's color
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
 		glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
 		glBlendEquation(GL_MIN);
-		glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
 		glClearColor(lc.r, lc.g, lc.b, lc.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -101,21 +93,21 @@ void LightScene::Render(glm::vec3 forward, glm::vec3 position, glm::mat4 viewMat
 		shadowStamp.setVec4("lightPos", lp.x, lp.y, lp.z, 1.0f);
 		shadowStamp.setVec4("lightColor", lc.r, lc.g, lc.b, lc.a);
 		shadowStamp.setFloat("shadRad", ls);
-		injectViewTransform(shadowStamp, viewMat, screenWidth,screenHeight);
+		injectViewTransform(shadowStamp, viewMat, screenWidth, screenHeight);
 
-		//draw objects
+		//draw shadows to cover light's color
 		for (Model* m : models)
 			m->Draw(shadowStamp);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
 		glBlendEquation(GL_FUNC_ADD);
-		lightBlender.use();
 		glBindTexture(GL_TEXTURE_2D, frameTextureID);
+		lightBlender.use();
 		lightBlender.setVec4("lightPos", lp.x, lp.y, lp.z, 1.0);
 		lightBlender.setFloat("lightRad", lr);
 		injectViewTransformNearAlign(lightBlender, viewMat, screenWidth, screenHeight);
-		//draw texture
+		//draw shadowed texture to screen with appropriate brightness falloff
 		lightScreen.Draw(lightBlender);
 	}
 	glEnable(GL_DEPTH_TEST);

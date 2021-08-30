@@ -10,7 +10,7 @@ public:
 	LightScene(std::vector<SolidLight*> light, std::vector<Model*> model, Shader shadow, Shader blend);
 	~LightScene();
 
-	void Render(glm::vec3 forward, glm::vec3 position, glm::mat4 viewMat, GLID frameBufferID, GLID frameTextureID, unsigned int screenWidth, unsigned int screenHeight);
+	void Render(glm::mat4 viewMat, GLID frameBufferID, GLID frameTextureID, unsigned int screenWidth, unsigned int screenHeight);
 	void RenderObjects(Shader objectShader, glm::mat4 viewMat, unsigned int screenWidth, unsigned int screenHeight);
 	glm::mat4 local;
 private:

@@ -41,15 +41,11 @@ int main()
 	ShaderElement shadowGS("GS/ShadowMaker.gs", GL_GEOMETRY_SHADER);
 	ShaderElement shadowFS("FS/Shadow.fs", GL_FRAGMENT_SHADER);
 
-	ShaderElement samplerVS("VS/Sampler.vs", GL_VERTEX_SHADER);
-	ShaderElement samplerFS("FS/Sampler.fs", GL_FRAGMENT_SHADER);
-
 	ShaderElement lightVS("VS/Light.vs", GL_VERTEX_SHADER);
 	ShaderElement lightFS("FS/Light.fs", GL_FRAGMENT_SHADER);
 
 	Shader simpleShader;
 	Shader shadowStamp;
-	Shader lightStamp;
 	Shader lightBlender;
 
 	simpleShader.addElement(simpleVS);
@@ -61,10 +57,6 @@ int main()
 	shadowStamp.addElement(shadowGS);
 	shadowStamp.addElement(shadowFS);
 	shadowStamp.prime();
-
-	lightStamp.addElement(samplerVS);
-	lightStamp.addElement(samplerFS);
-	lightStamp.prime();
 
 	lightBlender.addElement(lightVS);
 	lightBlender.addElement(lightFS);
@@ -383,7 +375,7 @@ int main()
 
 	while (!glfwWindowShouldClose(window.glWindow))
 	{
-		float currentFrame = glfwGetTime();
+		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		//input
@@ -393,7 +385,7 @@ int main()
 
 
 
-		static float timeValue = glfwGetTime();
+		static float timeValue = static_cast<float>(glfwGetTime());
 		if (!paused)
 			timeValue += deltaTime;
 
