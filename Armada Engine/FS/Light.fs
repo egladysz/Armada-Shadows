@@ -19,19 +19,18 @@ void main()
 	vec4 lightProj = viewToProjection*adjustedLightPos;
 	float depth = 1.0f/lightProj.z;
 
-	vec4 range = (viewToProjection*vec4(1.0f,1.0f,0.0f,0.0f))*depth;
+	vec2 range = (viewToProjection*vec4(1.0f,1.0f,0.0f,0.0f)).xy*depth;
 
-	vec4 uvScreen = (vec4(uvCoord-vec2(0.5f,0.5f),0.0f,2.0f))*2;
+	vec2 uvScreen = (uvCoord-vec2(0.5f,0.5f))*2;
 
-	vec4 span4 = (lightProj*depth)-uvScreen;
-	vec2 span = vec2(span4.x/range.x, span4.y/range.y);
-	float distance = sqrt(dot(span,span));
+	vec2 span = ((lightProj.xy*depth)-uvScreen)/range;
+	float sqDistance = dot(span,span);
 
-	float intensity = max(1.f-distance/lightRad,0.f);
+	float intensity = 1.f - min(sqDistance/(lightRad*lightRad),1.f);
 
 
 	vec4 fc = texture(overlayTexture, uvCoord);
-	fc.a = fc.a*intensity;
+	fc.a *= intensity;
 
     FragColor = fc;
 } 

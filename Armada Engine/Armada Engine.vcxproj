@@ -186,7 +186,6 @@ robocopy $(ProjectDir)GS $(TargetDir)GS</Command>
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="Window.h" />
     <None Include="FS\Light.fs" />
-    <None Include="FS\Sampler.fs" />
     <None Include="FS\Shadow.fs" />
     <None Include="FS\Simple.fs">
       <FileType>CppHeader</FileType>
@@ -194,7 +193,6 @@ robocopy $(ProjectDir)GS $(TargetDir)GS</Command>
     <ClInclude Include="Shader.h" />
     <ClInclude Include="VS\Simple.vs" />
     <None Include="VS\Light.vs" />
-    <None Include="VS\Sampler.vs" />
     <None Include="VS\Shadow.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

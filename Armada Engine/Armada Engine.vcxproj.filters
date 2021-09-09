@@ -148,12 +148,6 @@
     <None Include="VS\Shadow.vs">
       <Filter>Shader Files\Vertex</Filter>
     </None>
-    <None Include="VS\Sampler.vs">
-      <Filter>Shader Files\Vertex</Filter>
-    </None>
-    <None Include="FS\Sampler.fs">
-      <Filter>Shader Files\Fragment</Filter>
-    </None>
     <None Include="FS\Light.fs">
       <Filter>Shader Files\Fragment</Filter>
     </None>
