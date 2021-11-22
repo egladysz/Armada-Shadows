@@ -195,7 +195,7 @@ void Window::processInput(float deltaTime, bool& paused, int& scene)
 	cam.setPosition(glm::normalize(cam.getPosition()) * (camDistance));
 }
 
-void Window::render(std::vector<LightScene> scenes, Shader objectShader)
+void Window::render(std::vector<LightScene> scenes)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -208,7 +208,7 @@ void Window::render(std::vector<LightScene> scenes, Shader objectShader)
 
 	for (LightScene s : scenes)
 	{
-		s.RenderObjects(objectShader,cam.getView(), screenWidth, screenHeight);
+		s.RenderObjects(cam.getView(), screenWidth, screenHeight);
 	}
 	//event + buffer swap
 	glfwPollEvents();

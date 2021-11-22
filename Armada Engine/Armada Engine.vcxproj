@@ -158,6 +158,9 @@ robocopy $(ProjectDir)GS $(TargetDir)GS</Command>
     <ClCompile Include="glad.c" />
     <ClCompile Include="LightController.cpp" />
     <ClCompile Include="LightScene.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MaterialBasicColor.cpp" />
+    <ClCompile Include="MaterialLightShadow.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshReaderObj.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -174,6 +177,9 @@ robocopy $(ProjectDir)GS $(TargetDir)GS</Command>
     <ClInclude Include="GS\ShadowMaker.gs" />
     <ClInclude Include="LightController.h" />
     <ClInclude Include="LightScene.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="MaterialBasicColor.h" />
+    <ClInclude Include="MaterialLightShadow.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshReader.h" />
     <ClInclude Include="MeshReaderObj.h" />
@@ -192,6 +198,7 @@ robocopy $(ProjectDir)GS $(TargetDir)GS</Command>
     </None>
     <ClInclude Include="Shader.h" />
     <ClInclude Include="VS\Simple.vs" />
+    <None Include="ShaderTemplate.h" />
     <None Include="VS\Light.vs" />
     <None Include="VS\Shadow.vs" />
   </ItemGroup>

@@ -5,11 +5,11 @@ layout (triangle_strip, max_vertices = 10) out;
 uniform mat4 worldToView;
 uniform mat4 viewToProjection;
 
-uniform vec4 lightPos;
+uniform vec3 lightPos;
 uniform float shadRad;
 
 
-vec4 lightTransformPos = (worldToView*lightPos);
+vec4 lightTransformPos = (worldToView*vec4(lightPos, 1.0f));
 
 out float shadowAlpha;
 

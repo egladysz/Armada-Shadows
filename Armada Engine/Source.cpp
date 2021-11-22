@@ -7,6 +7,8 @@
 #include "LightScene.h"
 #include "MeshReaderObj.h"
 #include "Agent.h"
+#include "MaterialBasicColor.h"
+#include "MaterialLightShadow.h"
 unsigned int screenWidth = 1920;
 unsigned int screenHeight = 1080;
 
@@ -48,10 +50,11 @@ int main()
 	Shader shadowStamp;
 	Shader lightBlender;
 
+
 	simpleShader.addElement(simpleVS);
 	simpleShader.addElement(simpleFS);
 	simpleShader.prime();
-
+	
 
 	shadowStamp.addElement(shadowVS);
 	shadowStamp.addElement(shadowGS);
@@ -62,6 +65,8 @@ int main()
 	lightBlender.addElement(lightFS);
 	lightBlender.prime();
 
+	MaterialBasicColor matWhite{ &simpleShader,glm::vec4(1.0f,1.0f,1.0f,1.0f) };
+	MaterialLightShadow shadowCaster{ &shadowStamp, &lightBlender };
 
 	MeshReaderObj meshReader;
 	
@@ -92,6 +97,7 @@ int main()
 		l1.push_back(&s1l1);
 		
 		s1c1.mesh = star.get();
+		s1c1.material = &matWhite;
 		s1c1.transform = glm::rotate(glm::mat4{ 1 }, glm::radians(-90.0f),glm::vec3(1.0f,0.0f,0.0f));
 		m1.push_back(&s1c1);
 		auto& gl = window.glWindow;
@@ -116,7 +122,7 @@ int main()
 			m.transform = glm::rotate(glm::rotate(glm::scale(glm::translate(glm::mat4{ 1 }, currDisp), glm::vec3(5.0f)), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::radians(5 * time), glm::vec3(0.0f, 1.0f, 0.0f));
 			}));
 
-		LightScene s1{ l1,m1,shadowStamp,lightBlender };
+		LightScene s1{ l1,m1,&shadowCaster };
 		allScenes.push_back(s1);
 	}
 
@@ -174,13 +180,14 @@ int main()
 			}));
 
 		s2c1.mesh = cube.get();
+		s2c1.material = &matWhite;
 		m2.push_back(&s2c1);
 		am.push_back(Agent<Model>(s2c1, [](Model& m, float time) {
 			m.transform = glm::translate(glm::rotate(glm::mat4{ 1 }, glm::radians(-90 * time), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(2.0f, 0.0f, 0.0f));
 			}));
 
 		//transform time dependent
-		LightScene s2{ l2,m2,shadowStamp,lightBlender };
+		LightScene s2{ l2,m2,&shadowCaster };
 		allScenes.push_back(s2);
 	}
 
@@ -207,7 +214,7 @@ int main()
 		l3.push_back(&s3l2);
 		l3.push_back(&s3l3);
 
-		LightScene s3{ l3,m3,shadowStamp,lightBlender };
+		LightScene s3{ l3,m3,&shadowCaster };
 		allScenes.push_back(s3);
 	}
 
@@ -229,6 +236,7 @@ int main()
 		srand(9);
 		for (int i = 0; i < 40; i++){
 			s4c[i].mesh = cube.get();
+			s4c[i].material = &matWhite;
 			m4.push_back(&s4c[i]);
 			int rand1 = rand();
 			int rand2 = rand();
@@ -242,7 +250,7 @@ int main()
 		}
 
 		//m4.push_back(&s4c1);
-		LightScene s4{ l4,m4,shadowStamp,lightBlender };
+		LightScene s4{ l4,m4,&shadowCaster };
 		s4.local = glm::mat4{ 1 };// glm::translate(glm::mat4{ 1 }, glm::vec3(40.0f, 0.0f, 0.0f));
 		allScenes.push_back(s4);
 	}
@@ -280,7 +288,7 @@ int main()
 
 		for (int i = 0; i < 49; i++){
 			s5c[i].mesh = ball.get();
-
+			s5c[i].material = &matWhite;
 			m5.push_back(&s5c[i]);
 			am.push_back(Agent<Model>(s5c[i], [i](Model& m, float time) {
 				glm::mat4 transform{ 1 };
@@ -291,7 +299,7 @@ int main()
 				}));
 		}
 
-		LightScene s5{ l5,m5,shadowStamp,lightBlender };
+		LightScene s5{ l5,m5,&shadowCaster };
 		allScenes.push_back(s5);
 	}
 	
@@ -327,12 +335,13 @@ int main()
 
 
 		s6c[0].mesh = ball.get();
+		s6c[0].material = &matWhite;
 		//sun is 0.00465 AU
 		float sunRadii = 0.00465f * 0.0625f * auToRadii;// *planetScale;
 		s6c[0].transform = glm::scale(glm::mat4{ 1 }, glm::vec3(sunRadii, sunRadii, sunRadii));
 		m6.push_back(&s6c[0]);
 
-		LightScene s6{ l6,m6,shadowStamp,lightBlender };
+		LightScene s6{ l6,m6,&shadowCaster };
 		s6.local = glm::mat4{ 1 };
 		allScenes.push_back(s6);
 
@@ -349,6 +358,7 @@ int main()
 		for (int i = 0; i < translationAndScale.size(); i++)
 		{
 			s7c[i].mesh = ball.get();
+			s7c[i].material = &matWhite;
 			m7.push_back(&s7c[i]);
 			auto TaS = translationAndScale[i];
 			am.push_back(Agent<Model>(s7c[i], [TaS,auToRadii,planetScale](Model& m, float time) {
@@ -363,7 +373,7 @@ int main()
 				}));
 		}
 
-		LightScene s7{ l7,m7,shadowStamp,lightBlender };
+		LightScene s7{ l7,m7,&shadowCaster };
 		s7.local = glm::mat4{ 1 };
 		allScenes.push_back(s7);
 
@@ -409,7 +419,7 @@ int main()
 		{
 			currentScene.push_back(allScenes.at(scene));
 		}
-		window.render(currentScene, simpleShader);
+		window.render(currentScene);
 		currentScene.pop_back();
 		//engage custom frame buffer
 

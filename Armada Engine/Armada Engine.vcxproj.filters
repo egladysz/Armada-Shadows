@@ -13,18 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Shader Files">
-      <UniqueIdentifier>{a1c078a6-4ae0-4bfc-99da-b591c193fc6a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader Files\Vertex">
-      <UniqueIdentifier>{0e19b725-4d9c-4c1b-939d-23a8ecd2ce28}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader Files\Fragment">
-      <UniqueIdentifier>{37ddfe24-5c86-427d-8865-bc01b2e52103}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader Files\Geometry">
-      <UniqueIdentifier>{7c2b3303-9ea1-46f2-b73a-b0960dc3d571}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Light">
       <UniqueIdentifier>{60db0c6d-08f7-434d-8119-171679d69337}</UniqueIdentifier>
     </Filter>
@@ -36,6 +24,15 @@
     </Filter>
     <Filter Include="IO">
       <UniqueIdentifier>{37341871-e418-4d72-beba-6599a064969f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{a1c078a6-4ae0-4bfc-99da-b591c193fc6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\BasicColor">
+      <UniqueIdentifier>{ae6b72cc-9926-4aa9-bd4f-400b3c9cf81e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\LightShadow">
+      <UniqueIdentifier>{699bca65-0e83-4540-b32c-398483836dae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -81,13 +78,19 @@
     <ClCompile Include="MeshReaderObj.cpp">
       <Filter>IO</Filter>
     </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialBasicColor.cpp">
+      <Filter>Shaders\BasicColor</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialLightShadow.cpp">
+      <Filter>Shaders\LightShadow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VS\Simple.vs">
-      <Filter>Shader Files\Vertex</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
       <Filter>Header Files</Filter>
@@ -100,9 +103,6 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GS\ShadowMaker.gs">
-      <Filter>Shader Files\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="ShaderElement.h">
       <Filter>Header Files</Filter>
@@ -137,22 +137,40 @@
     <ClInclude Include="Agent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VS\Simple.vs">
+      <Filter>Shaders\BasicColor</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialBasicColor.h">
+      <Filter>Shaders\BasicColor</Filter>
+    </ClInclude>
+    <ClInclude Include="GS\ShadowMaker.gs">
+      <Filter>Shaders\LightShadow</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialLightShadow.h">
+      <Filter>Shaders\LightShadow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ShaderTemplate.h">
+      <Filter>Header Files</Filter>
+    </None>
     <None Include="FS\Simple.fs">
-      <Filter>Shader Files\Fragment</Filter>
-    </None>
-    <None Include="FS\Shadow.fs">
-      <Filter>Shader Files\Fragment</Filter>
-    </None>
-    <None Include="VS\Shadow.vs">
-      <Filter>Shader Files\Vertex</Filter>
-    </None>
-    <None Include="FS\Light.fs">
-      <Filter>Shader Files\Fragment</Filter>
+      <Filter>Shaders\BasicColor</Filter>
     </None>
     <None Include="VS\Light.vs">
-      <Filter>Shader Files\Vertex</Filter>
+      <Filter>Shaders\LightShadow</Filter>
+    </None>
+    <None Include="VS\Shadow.vs">
+      <Filter>Shaders\LightShadow</Filter>
+    </None>
+    <None Include="FS\Light.fs">
+      <Filter>Shaders\LightShadow</Filter>
+    </None>
+    <None Include="FS\Shadow.fs">
+      <Filter>Shaders\LightShadow</Filter>
     </None>
   </ItemGroup>
 </Project>

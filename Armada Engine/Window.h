@@ -10,7 +10,6 @@
 
 
 
-
 class Window
 {
 public:
@@ -26,6 +25,6 @@ public:
 	void setCamera(glm::vec3 pos, glm::vec3 forward, glm::vec3 up);
 	~Window();
 	void processInput(float deltaTime, bool & paused, int& scene);
-	void render(std::vector<LightScene> scenes, Shader objectShader);
+	void render(std::vector<LightScene> scenes);
 };
 

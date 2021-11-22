@@ -2,19 +2,17 @@
 out vec4 FragColor;
 uniform sampler2D overlayTexture;
 
-uniform vec4 lightPos;
+uniform vec3 lightPos;
 uniform float lightRad;
 uniform mat4 worldToView;
 uniform mat4 viewToProjection;
 
 uniform float nearPlaneDistance;
-uniform float screenWidth;
-uniform float screenHeight;
 
 in vec2 uvCoord;
 void main()
 {
-	vec4 adjustedLightPos = worldToView*lightPos;
+	vec4 adjustedLightPos = worldToView*vec4(lightPos,1.0f);
 	adjustedLightPos.z = adjustedLightPos.z - 2.0*nearPlaneDistance;
 	vec4 lightProj = viewToProjection*adjustedLightPos;
 	float depth = 1.0f/lightProj.z;

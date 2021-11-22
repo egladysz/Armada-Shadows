@@ -6,32 +6,8 @@
 #include <glm/glm/gtc/matrix_transform.hpp>
 #include <map>
 #include <algorithm>
-
-void LightScene::injectViewTransform(Shader shader, glm::mat4 viewMat, unsigned int width, unsigned int height)
-{
-	glm::mat4 view;
-	view = viewMat*local;
-	glm::mat4 proj;
-	proj = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.01f, 10000.0f);
-	GLID viewLoc = glGetUniformLocation(shader.ID, "worldToView");
-	GLID projLoc = glGetUniformLocation(shader.ID, "viewToProjection");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
-}
-void LightScene::injectViewTransformNearAlign(Shader shader, glm::mat4 viewMat, unsigned int width, unsigned int height)
-{
-	float nearPlaneDistance = 0.1f;
-	glm::mat4 view;
-	view = viewMat * local;
-	glm::mat4 proj;
-	proj = glm::perspective(glm::radians(70.0f), (float)width / (float)height, nearPlaneDistance, 1000.0f);
-	GLID viewLoc = glGetUniformLocation(shader.ID, "worldToView");
-	GLID projLoc = glGetUniformLocation(shader.ID, "viewToProjection");
-	GLID nearLoc = glGetUniformLocation(shader.ID, "nearPlaneDistance");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
-	glUniform1f(nearLoc, nearPlaneDistance);
-}
+const float nearPlaneDistance = 0.1f;
+const float farPlaneDistance = 10000.0f;
 
 void LightScene::Render(glm::mat4 viewMat, GLID frameBufferID, GLID frameTextureID, unsigned int screenWidth, unsigned int screenHeight)
 {
@@ -83,57 +59,56 @@ void LightScene::Render(glm::mat4 viewMat, GLID frameBufferID, GLID frameTexture
 		float ls = light->shadowLength;
 
 		//fill frameBuffer with light's color
+		
 		glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
 		glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
 		glBlendEquation(GL_MIN);
 		glClearColor(lc.r, lc.g, lc.b, lc.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		shadowStamp.use();
-		shadowStamp.setVec4("lightPos", lp.x, lp.y, lp.z, 1.0f);
-		shadowStamp.setVec4("lightColor", lc.r, lc.g, lc.b, lc.a);
-		shadowStamp.setFloat("shadRad", ls);
-		injectViewTransform(shadowStamp, viewMat, screenWidth, screenHeight);
+		shadowCaster->use();
+		shadowCaster->setLightParameters(*light, nearPlaneDistance);
+		shadowCaster->setViewTransform(viewMat * local, glm::perspective(glm::radians(70.0f), (float)screenWidth / (float)screenHeight, nearPlaneDistance, farPlaneDistance));
 
 		//draw shadows to cover light's color
 		for (Model* m : models)
-			m->Draw(shadowStamp);
+			m->Draw(*(shadowCaster->getShader()));
 
+		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
 		glBlendEquation(GL_FUNC_ADD);
 		glBindTexture(GL_TEXTURE_2D, frameTextureID);
-		lightBlender.use();
-		lightBlender.setVec4("lightPos", lp.x, lp.y, lp.z, 1.0);
-		lightBlender.setFloat("lightRad", lr);
-		injectViewTransformNearAlign(lightBlender, viewMat, screenWidth, screenHeight);
+		shadowCaster->useNext();
+		shadowCaster->setLightParametersNext(*light, nearPlaneDistance);
+		shadowCaster->setViewTransformNext(viewMat * local, glm::perspective(glm::radians(70.0f), (float)screenWidth / (float)screenHeight, nearPlaneDistance, farPlaneDistance));
 		//draw shadowed texture to screen with appropriate brightness falloff
-		lightScreen.Draw(lightBlender);
+		lightScreen.Draw(*(shadowCaster->getShaderNext()));
 	}
 	glEnable(GL_DEPTH_TEST);
 	
 }
 
-void LightScene::RenderObjects(Shader objectShader, glm::mat4 viewMat, unsigned int screenWidth, unsigned int screenHeight)
+void LightScene::RenderObjects(glm::mat4 viewMat, unsigned int screenWidth, unsigned int screenHeight)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	//engage normal shader
-	objectShader.use();
 	glDepthMask(GL_TRUE);
-	injectViewTransform(objectShader, viewMat, screenWidth, screenHeight);
 	//draw objects
 	glDisable(GL_BLEND);
-	for (Model* m: models)
-		m->Draw(objectShader);
+	
+	for (Model* m : models) {
+		m->material->use();
+		m->material->setViewTransform(viewMat * local, glm::perspective(glm::radians(70.0f), (float)screenWidth / (float)screenHeight, nearPlaneDistance, farPlaneDistance));
+		m->Draw(*(m->material->getShader()));
+	}
 }
 
 
-LightScene::LightScene(std::vector<SolidLight*> light, std::vector<Model*> model, Shader shadow, Shader blend)
+LightScene::LightScene(std::vector<SolidLight*> light, std::vector<Model*> model, MaterialLightShadow* shaders)
 {
 	lights = light;
 	models = model;
-	shadowStamp = shadow;
-	lightBlender = blend;
+	shadowCaster = shaders;
 	local = glm::mat4{ 1 };
 }
 

@@ -1,11 +1,13 @@
 #pragma once
 #include <glad/glad.h>
-
+#include <GLFW/glfw3.h>
+#include <glm/glm/glm.hpp>
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include "ShaderElement.h"
+
 class Shader
 {
 public:
@@ -14,15 +16,22 @@ public:
 
 	Shader();
 
-	void use();
+	void use() const;
 
 	void addElement(ShaderElement);
 	void prime();
 
-	void setBool(const std::string &name, bool value) const;
-	void setInt(const std::string &name, int value) const;
-	void setFloat(const std::string &name, float value) const;
-	void setVec4(const std::string &name, float x, float y, float z, float w) const;
+	template <typename T>
+	void setUniform(const std::string& name, T value) const;
+	template <>
+	void setUniform(const std::string& name, float value) const;
+	template <>
+	void setUniform(const std::string& name, glm::vec3 value) const;
+	template <>
+	void setUniform(const std::string& name, glm::vec4 value) const;
+	template <>
+	void setUniform(const std::string& name, glm::mat4 value) const;
 	~Shader();
 };
 
+#include "ShaderTemplate.h"
