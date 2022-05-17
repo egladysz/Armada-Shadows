@@ -1,14 +1,13 @@
 #include "Window.h"
-
-#include "Shader.h"
-#include "Mesh.h"
-#include "Model.h"
-#include "SolidLight.h"
-#include "LightScene.h"
-#include "MeshReaderObj.h"
-#include "Agent.h"
-#include "MaterialBasicColor.h"
-#include "MaterialLightShadow.h"
+#include "../Armada Engine/Shader.h"
+#include "../Armada Engine/Mesh.h"
+#include "../Armada Engine/Model.h"
+#include "../Armada Engine/SolidLight.h"
+#include "../Armada Engine/LightScene.h"
+#include "../Armada Engine/MeshReaderObj.h"
+#include "../Armada Engine/Agent.h"
+#include "../Armada Engine/MaterialBasicColor.h"
+#include "../Armada Engine/MaterialLightShadow.h"
 unsigned int screenWidth = 1920;
 unsigned int screenHeight = 1080;
 

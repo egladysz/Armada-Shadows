@@ -5,8 +5,9 @@
 
 #include <vector>
 
-#include "Shader.h"
-#include "LightScene.h"
+#include "../Armada Engine/Shader.h"
+#include "../Armada Engine/LightScene.h"
+
 
 
 
@@ -25,6 +26,6 @@ public:
 	void setCamera(glm::vec3 pos, glm::vec3 forward, glm::vec3 up);
 	~Window();
 	void processInput(float deltaTime, bool & paused, int& scene);
-	void render(std::vector<LightScene> scenes);
+	void render(std::vector<Model>, Shader, std::vector<glm::vec4>);
 };
 

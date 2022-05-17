@@ -1,5 +1,5 @@
 #include "Window.h"
-#include "Camera.h"
+#include "../Armada Engine/Camera.h"
 
 int screenWidth;
 int screenHeight;
@@ -42,7 +42,7 @@ bool Window::initialize()
 	//glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 	//glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
-	//glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+	glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
 
 

@@ -36,9 +36,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -62,9 +59,6 @@
     </ClCompile>
     <ClCompile Include="LightScene.cpp">
       <Filter>Light\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DemoScene.cpp">
       <Filter>Source Files</Filter>
@@ -115,9 +109,6 @@
     </ClInclude>
     <ClInclude Include="LightScene.h">
       <Filter>Light\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DemoScene.h">
       <Filter>Header Files</Filter>
